@@ -1,8 +1,13 @@
 package com.plan_menu.shopping.model;
 
 import jakarta.persistence.*;
+
 import java.util.List;
 
+/**
+ * Сущность для представления списка покупок в базе данных.
+ * Содержит ID списка, ID пользователя, статус и список продуктов.
+ */
 @Entity
 public class ShoppingList {
 
@@ -10,15 +15,19 @@ public class ShoppingList {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long userId;
+    private String userId;
+    private String status;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<ShoppingItem> items;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<ShoppingListItem> items;
+
+    // Конструкторы, геттеры и сеттеры
 
     public ShoppingList() {}
 
-    public ShoppingList(Long userId, List<ShoppingItem> items) {
+    public ShoppingList(String userId, String status, List<ShoppingListItem> items) {
         this.userId = userId;
+        this.status = status;
         this.items = items;
     }
 
@@ -26,11 +35,31 @@ public class ShoppingList {
         return id;
     }
 
-    public Long getUserId() {
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getUserId() {
         return userId;
     }
 
-    public List<ShoppingItem> getItems() {
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public List<ShoppingListItem> getItems() {
         return items;
+    }
+
+    public void setItems(List<ShoppingListItem> items) {
+        this.items = items;
     }
 }

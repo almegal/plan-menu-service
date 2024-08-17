@@ -1,7 +1,9 @@
 package com.plan_menu.meal_plan_service.entity;
 
 import jakarta.persistence.*;
+
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Сущность, представляющая план питания пользователя.
@@ -59,5 +61,17 @@ public class MealPlanEntity {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof MealPlanEntity that)) return false;
+        return Objects.equals(id, that.id) && Objects.equals(mealPlanEntryEntityList, that.mealPlanEntryEntityList) && Objects.equals(userId, that.userId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, mealPlanEntryEntityList, userId);
     }
 }

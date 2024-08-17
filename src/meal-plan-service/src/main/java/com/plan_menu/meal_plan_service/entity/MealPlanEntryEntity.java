@@ -2,6 +2,8 @@ package com.plan_menu.meal_plan_service.entity;
 
 import jakarta.persistence.*;
 
+import java.util.Objects;
+
 /**
  * Сущность, представляющая запись в плане питания.
  * Эта сущность используется для хранения информации о конкретном рецепте в базе данных.
@@ -89,5 +91,17 @@ public class MealPlanEntryEntity {
 
     public void setRecipeId(Long recipeId) {
         this.recipeId = recipeId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof MealPlanEntryEntity that)) return false;
+        return Objects.equals(id, that.id) && Objects.equals(titleRecipe, that.titleRecipe) && Objects.equals(dayOfWeek, that.dayOfWeek) && Objects.equals(numberOfPeople, that.numberOfPeople) && Objects.equals(recipeId, that.recipeId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, titleRecipe, dayOfWeek, numberOfPeople, recipeId);
     }
 }

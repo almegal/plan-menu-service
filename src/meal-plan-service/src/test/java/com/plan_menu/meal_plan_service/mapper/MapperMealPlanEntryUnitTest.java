@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
 
+import static com.plan_menu.meal_plan_service.ConfigMock.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -19,19 +20,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
  * сущностью {@link MealPlanEntryEntity} и DTO {@link MealPlanEntryDto}.
  */
 public class MapperMealPlanEntryUnitTest {
-
-    // Тестовые данные для проверки преобразований
-    private final String TITLE_RECIPE = "Арбуз";
-    private final String DAY_OF_WEEK = "Понедельник";
-    private final int NUMBER_OF_PORTION = 3;
-    private final Long RECIPE_ID = 3123L;
-
     // Объект маппера, который будет тестироваться
     MapperMealPlanEntryImpl mapper = new MapperMealPlanEntryImpl();
-
-    // Сущность и DTO, которые будут использоваться в тестах
-    private MealPlanEntryEntity MEAL_PLAN_ENTRY;
-    private MealPlanEntryDto MEAL_PLAN_ENTRY_DTO;
 
     /**
      * Инициализация тестовых данных перед каждым тестом.
@@ -40,19 +30,11 @@ public class MapperMealPlanEntryUnitTest {
     @BeforeEach
     public void init() {
         // Инициализация сущности с тестовыми данными
-        MEAL_PLAN_ENTRY = new MealPlanEntryEntity();
-        MEAL_PLAN_ENTRY.setTitleRecipe(TITLE_RECIPE);
-        MEAL_PLAN_ENTRY.setRecipeId(RECIPE_ID);
-        MEAL_PLAN_ENTRY.setDayOfWeek(DAY_OF_WEEK);
-        MEAL_PLAN_ENTRY.setNumberOfPeople(NUMBER_OF_PORTION);
-
-        // Инициализация DTO с тестовыми данными
-        MEAL_PLAN_ENTRY_DTO = new MealPlanEntryDto(
-                RECIPE_ID,
-                TITLE_RECIPE,
-                DAY_OF_WEEK,
-                NUMBER_OF_PORTION
-        );
+        MEAL_PLAN_ENTRY_ENTITY = new MealPlanEntryEntity();
+        MEAL_PLAN_ENTRY_ENTITY.setTitleRecipe(TITLE_RECIPE);
+        MEAL_PLAN_ENTRY_ENTITY.setRecipeId(RECIPE_ID);
+        MEAL_PLAN_ENTRY_ENTITY.setDayOfWeek(DAY_OF_WEEK);
+        MEAL_PLAN_ENTRY_ENTITY.setNumberOfPeople(NUMBER_OF_PORTION);
     }
 
     /**
@@ -62,9 +44,9 @@ public class MapperMealPlanEntryUnitTest {
     @Test
     public void correctConvertFromEntityToDto() {
         // Выполняем преобразование
-        MealPlanEntryDto actual = mapper.mapToDto(MEAL_PLAN_ENTRY);
+        MealPlanEntryDto actual = mapper.mapToDto(MEAL_PLAN_ENTRY_ENTITY);
         // Сравниваем результат с ожидаемым
-        assertEquals(MEAL_PLAN_ENTRY_DTO, actual);
+        assertEquals(MEAL_PLAN_ENTRY_ENTITY_DTO, actual);
     }
 
     /**
@@ -74,9 +56,9 @@ public class MapperMealPlanEntryUnitTest {
     @Test
     public void correctConvertFromDtoToEntity() {
         // Выполняем преобразование
-        MealPlanEntryEntity actual = mapper.mapToEntity(MEAL_PLAN_ENTRY_DTO);
+        MealPlanEntryEntity actual = mapper.mapToEntity(MEAL_PLAN_ENTRY_ENTITY_DTO);
         // Сравниваем результат с ожидаемым
-        assertEquals(MEAL_PLAN_ENTRY, actual);
+        assertEquals(MEAL_PLAN_ENTRY_ENTITY, actual);
     }
 
     /**

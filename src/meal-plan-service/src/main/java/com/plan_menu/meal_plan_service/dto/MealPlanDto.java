@@ -7,10 +7,10 @@ import java.util.List;
  * Этот класс является неизменяемым и используется для передачи данных, связанных с планом питания пользователя.
  *
  * @param userId         Уникальный идентификатор пользователя, связанного с планом питания.
- * @param mealPlanEntry  Список объектов MealPlanEntryDto, представляющих отдельные записи плана питания.
+ * @param mealPlanEntryEntityList  Список объектов MealPlanEntryDto, представляющих отдельные записи плана питания.
  */
 public record MealPlanDto(
         Long userId,
-        List<MealPlanEntryDto> mealPlanEntry
+        List<MealPlanEntryDto> mealPlanEntryEntityList
 ) {
 }

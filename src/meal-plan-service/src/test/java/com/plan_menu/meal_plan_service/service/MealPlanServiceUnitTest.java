@@ -123,7 +123,7 @@ public class MealPlanServiceUnitTest {
         when(repository.save(MEAL_PLAN_ENTITY)).thenReturn(MEAL_PLAN_ENTITY);
         when(mapperMealPlan.mapToEntity(MEAL_PLAN_ENTITY_DTO)).thenReturn(MEAL_PLAN_ENTITY);
         // Внутри метода используется приватная проверка существует пользователь или нет
-        when(repository.findByUserId(anyLong())).thenReturn(Optional.of(MEAL_PLAN_ENTITY));
+        when(repository.findByUserId(anyLong())).thenReturn(Optional.empty());
         // Вызов тестируемого метода
         service.saveMealPlan(MEAL_PLAN_ENTITY_DTO);
         // Проверка вызова маппера

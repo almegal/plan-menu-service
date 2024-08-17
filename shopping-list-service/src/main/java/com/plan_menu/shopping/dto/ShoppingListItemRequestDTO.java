@@ -1,11 +1,13 @@
 package com.plan_menu.shopping.dto;
 
+import com.plan_menu.shopping.enums.MeasurementUnit;
+
 /**
- * DTO для представления отдельного продукта в запросе на создание списка покупок.
- * Содержит информацию о запрашиваемом продукте, его объеме и весе.
+ * Объект передачи данных (DTO) для запроса на добавление товара в список покупок.
+ * Этот DTO содержит идентификатор продукта, количество и единицу измерения.
  */
 public record ShoppingListItemRequestDTO(
-        String productName,
-        double requestedVolume,
-        double requestedWeight
-) {}
+        Long productId,
+        Integer quantity,
+        MeasurementUnit unit) {
+}

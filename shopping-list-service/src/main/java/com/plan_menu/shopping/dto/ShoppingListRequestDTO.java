@@ -1,12 +1,12 @@
 package com.plan_menu.shopping.dto;
 
-import java.util.List;
+import java.util.Map;
 
 /**
- * DTO для представления запроса на создание списка покупок.
- * Содержит информацию о пользователе и требуемых продуктах.
+ * Объект передачи данных (DTO) для запроса на создание или обновление списка покупок.
+ * Этот DTO содержит идентификатор пользователя и карту продуктов с их количеством.
  */
 public record ShoppingListRequestDTO(
-        String userId,
-        List<ShoppingListItemRequestDTO> items
-) {}
+        Long userId,
+        Map<Long, Integer> shoppingList) {
+}

@@ -1,12 +1,17 @@
 package com.plan_menu.shopping.dto;
 
+import com.plan_menu.shopping.enums.MeasurementUnit;
+
 /**
- * DTO для представления продукта в системе.
- * Содержит информацию о продукте, включая его ID, название, объем и вес.
+ * Объект передачи данных (DTO) для передачи информации о продукте между слоями.
+ * Этот DTO используется для передачи информации о продукте, такой как идентификатор, название,
+ * вес упаковки, краткое описание, количество на складе и единица измерения.
  */
 public record ProductDTO(
         Long id,
-        String name,
-        double volume,
-        double weight
-) {}
+        String title,
+        Double weightPerPack,
+        String descriptionShort,
+        Integer countOnStorage,
+        MeasurementUnit unit) {
+}

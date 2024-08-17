@@ -9,6 +9,7 @@ import java.util.Objects;
  * Эта сущность используется для хранения информации о конкретном рецепте в базе данных.
  */
 @Entity
+@Table(name = "meal_plan_entry")
 public class MealPlanEntryEntity {
 
     /**
@@ -17,6 +18,7 @@ public class MealPlanEntryEntity {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "entry_id")
     private Long id;
 
     /**
@@ -44,6 +46,9 @@ public class MealPlanEntryEntity {
     @Column(name = "recipe_id")
     private Long recipeId;
 
+    @ManyToOne
+    @JoinColumn(name = "meal_plan_id", nullable = false)
+    private MealPlanEntity mealPlan;
     /**
      * Пустой конструктор по умолчанию.
      * Используется фреймворками для создания экземпляров сущности.
@@ -91,6 +96,14 @@ public class MealPlanEntryEntity {
 
     public void setRecipeId(Long recipeId) {
         this.recipeId = recipeId;
+    }
+
+    public MealPlanEntity getMealPlan() {
+        return mealPlan;
+    }
+
+    public void setMealPlan(MealPlanEntity mealPlan) {
+        this.mealPlan = mealPlan;
     }
 
     @Override

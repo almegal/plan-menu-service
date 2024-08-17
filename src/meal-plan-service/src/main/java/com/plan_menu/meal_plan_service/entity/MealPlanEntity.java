@@ -9,6 +9,7 @@ import java.util.Objects;
  * Сущность, представляющая план питания пользователя.
  */
 @Entity
+@Table(name = "meal_plan")
 public class MealPlanEntity {
 
     /**
@@ -25,9 +26,9 @@ public class MealPlanEntity {
      * Используется каскадное сохранение и удаление записей (orphanRemoval = true).
      * Каждая запись привязана к этому плану через внешний ключ.
      */
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "MealPlanEntryEntity_id")
+    @OneToMany(mappedBy = "mealPlan", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MealPlanEntryEntity> mealPlanEntryEntityList;
+
 
     /**
      * Идентификатор пользователя, к которому относится данный план питания.

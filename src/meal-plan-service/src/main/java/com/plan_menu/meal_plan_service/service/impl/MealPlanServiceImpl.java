@@ -54,7 +54,9 @@ public class MealPlanServiceImpl implements MealPlanService {
     @Transactional
     public void saveMealPlan(MealPlanDto mealPlan) {
         // Проверяем существует ли план меню для такого пользователя
-        checkIfExistUser(mealPlan.userId());
+        if (checkIfExistUser(mealPlan.userId())) {
+            throw new RuntimeException("Plan menu for user already exist");
+        }
         // Преобразуем DTO в сущность MealPlanEntity.
         MealPlanEntity mealPlanEntity = mapperMealPlan.mapToEntity(mealPlan);
 
@@ -78,7 +80,12 @@ public class MealPlanServiceImpl implements MealPlanService {
 
     // Проверяем существует такой пользователь или нет
     // при необходимости выбрасываем исключение
-    private void checkIfExistUser(Long userId) throws RuntimeException {
-        repository.findByUserId(userId).orElseThrow();
+    private boolean checkIfExistUser(Long userId) throws RuntimeException {
+        try {
+            repository.findByUserId(userId).orElseThrow();
+            return true;
+        } catch (Exception ex) {
+            return false;
+        }
     }
 }

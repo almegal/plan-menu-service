@@ -7,6 +7,7 @@ CREATE TABLE MealPlan (
 );
 CREATE TABLE MealPlanEntry (
     entry_id SERIAL PRIMARY KEY,         -- Идентификатор записи в плане
+    recipe_title VARCHAR(150) NOT NUll,  -- Наименование рецепта
     meal_plan_id INT NOT NULL,           -- Ссылка на MealPlan
     recipe_id INT NOT NULL,              -- Идентификатор рецепта из другой БД/микросервиса
     week_day VARCHAR(10) NOT NULL,       -- День недели (например, 'Monday', 'Tuesday' и т.д.)

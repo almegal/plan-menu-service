@@ -3,6 +3,7 @@ package com.plan_menu.meal_plan_service.controller;
 import com.plan_menu.meal_plan_service.dto.MealPlanDto;
 import com.plan_menu.meal_plan_service.dto.MealPlanEntryDto;
 import com.plan_menu.meal_plan_service.service.MealPlanService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,13 +18,12 @@ public class MealPlanController {
     }
 
     @GetMapping("/menu-plan/{userId}")
-    public ResponseEntity<List<MealPlanEntryDto>> getMenuPlan(@PathVariable Long userId) {
+    public ResponseEntity<?> getMenuPlan(@PathVariable Long userId) {
         try {
             List<MealPlanEntryDto> mealPlanDto = mealPlanService.getMealPlan(userId);
             return ResponseEntity.ok(mealPlanDto);
         } catch (Exception ex) {
-            System.out.println(ex.getMessage());
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }
     }
 
@@ -32,8 +32,7 @@ public class MealPlanController {
         try {
             mealPlanService.saveMealPlan(mealPlanDto);
         } catch (Exception ex) {
-            System.out.println(ex.getMessage());
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(ex.getMessage());
         }
         return ResponseEntity.ok().build();
     }

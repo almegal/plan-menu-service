@@ -1,7 +1,7 @@
 package com.plan_menu.meal_plan_service.service.impl;
 
-import com.plan_menu.meal_plan_service.dto.MealPlanDto;
-import com.plan_menu.meal_plan_service.dto.MealPlanEntryDto;
+import com.plan_menu.meal_plan_service.component.ShopListMaker;
+import com.plan_menu.meal_plan_service.dto.*;
 import com.plan_menu.meal_plan_service.entity.MealPlanEntity;
 import com.plan_menu.meal_plan_service.entity.MealPlanEntryEntity;
 import com.plan_menu.meal_plan_service.exception.EntityNotFoundException;
@@ -9,12 +9,21 @@ import com.plan_menu.meal_plan_service.mapper.MapperMealPlan;
 import com.plan_menu.meal_plan_service.mapper.MapperMealPlanEntry;
 import com.plan_menu.meal_plan_service.repository.MealPlanRepository;
 import com.plan_menu.meal_plan_service.service.MealPlanService;
+import com.plan_menu.meal_plan_service.service.NotificationService;
+import com.plan_menu.meal_plan_service.service.OrderService;
+import com.plan_menu.meal_plan_service.service.RecipeService;
+import feign.FeignException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Реализация сервиса MealPlanService, предоставляющего методы для работы с планами питания.
+ */
 @Service
 public class MealPlanServiceImpl implements MealPlanService {
 
@@ -27,7 +36,29 @@ public class MealPlanServiceImpl implements MealPlanService {
     // Маппер для преобразования между сущностью MealPlanEntryEntity и DTO MealPlanEntryDto.
     private final MapperMealPlanEntry mapperMealPlanEntry;
 
-    // Конструктор для инъекции зависимостей.
+    // Сервис для работы с рецептами.
+    @Autowired
+    private RecipeService recipeService;
+
+    // Сервис для оформления заказов.
+    @Autowired
+    private OrderService orderService;
+
+    // Сервис для отправки уведомлений.
+    @Autowired
+    private NotificationService notificationService;
+
+    // Компонент для создания списка покупок.
+    @Autowired
+    private ShopListMaker shopListMaker;
+
+    /**
+     * Конструктор для инъекции зависимостей.
+     *
+     * @param repository          репозиторий для работы с сущностями MealPlan
+     * @param mapperMealPlan      маппер для преобразования между MealPlanEntity и MealPlanDto
+     * @param mapperMealPlanEntry маппер для преобразования между MealPlanEntryEntity и MealPlanEntryDto
+     */
     public MealPlanServiceImpl(MealPlanRepository repository,
                                MapperMealPlan mapperMealPlan,
                                MapperMealPlanEntry mapperMealPlanEntry) {
@@ -53,10 +84,11 @@ public class MealPlanServiceImpl implements MealPlanService {
     @Override
     @Transactional
     public void saveMealPlan(MealPlanDto mealPlan) {
-        // Проверяем существует ли план меню для такого пользователя
+        // Проверяем, существует ли план меню для данного пользователя
         if (checkIfExistUser(mealPlan.userId())) {
             throw new RuntimeException("Plan menu for user already exist");
         }
+
         // Преобразуем DTO в сущность MealPlanEntity.
         MealPlanEntity mealPlanEntity = mapperMealPlan.mapToEntity(mealPlan);
 
@@ -76,10 +108,50 @@ public class MealPlanServiceImpl implements MealPlanService {
 
         // Сохраняем MealPlanEntity в репозитории.
         repository.save(mealPlanEntity);
+
+        // Получаем рецепты из сервиса рецептов
+        List<RecipeWithIngredientDto> ListRecipesWithIngredientDto;
+        try {
+            // Извлекаем идентификаторы рецептов из плана питания
+            List<Long> ids = getIdsFromMealPlanEntry(mealPlanEntity.getMealPlanEntryEntityList());
+            // Получаем полные данные о рецептах
+            ListRecipesWithIngredientDto = recipeService.getRecipes(ids);
+        } catch (FeignException ex) {
+            throw new RuntimeException(ex.getMessage());
+        }
+
+        // Формируем список покупок
+        ShoppingListRequestDto shoppMap = shopListMaker.createShoppingList(mealPlan.userId(), ListRecipesWithIngredientDto, mealPlan.mealPlanEntryEntityList());
+
+        // Отправляем список на заказ
+        HttpStatus orderHttpStatus;
+        try {
+            orderHttpStatus = orderService.makeOrder(shoppMap);
+        } catch (FeignException ex) {
+            throw new RuntimeException(ex.getMessage());
+        }
+
+        // В зависимости от результата заказа, отправляем уведомление пользователю
+        if (orderHttpStatus.is2xxSuccessful()) {
+            notificationService.sendNotification(new NotificationDto(
+                    mealPlan.userId(),
+                    "Plan saved and product is ordering"
+            ));
+        } else {
+            notificationService.sendNotification(new NotificationDto(
+                    mealPlan.userId(),
+                    "Something went wrong"
+            ));
+        }
     }
 
-    // Проверяем существует такой пользователь или нет
-    // при необходимости выбрасываем исключение
+    /**
+     * Проверяет, существует ли план питания для пользователя.
+     *
+     * @param userId идентификатор пользователя
+     * @return true, если план питания существует, иначе false
+     * @throws RuntimeException если произошла ошибка при проверке
+     */
     private boolean checkIfExistUser(Long userId) throws RuntimeException {
         try {
             repository.findByUserId(userId).orElseThrow();
@@ -87,5 +159,15 @@ public class MealPlanServiceImpl implements MealPlanService {
         } catch (Exception ex) {
             return false;
         }
+    }
+
+    /**
+     * Извлекает список идентификаторов рецептов из записей плана питания.
+     *
+     * @param entry список записей плана питания
+     * @return список идентификаторов рецептов
+     */
+    private List<Long> getIdsFromMealPlanEntry(List<MealPlanEntryEntity> entry) {
+        return entry.stream().map(MealPlanEntryEntity::getRecipeId).toList();
     }
 }

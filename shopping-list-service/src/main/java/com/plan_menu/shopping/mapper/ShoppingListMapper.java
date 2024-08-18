@@ -104,6 +104,7 @@ public interface ShoppingListMapper {
 
     /**
      * Преобразует ShoppingListRequestDTO в ShoppingList.
+     * Игнорирует поля id и createdDate.
      *
      * @param shoppingListRequestDTO DTO ShoppingListRequestDTO
      * @return сущность ShoppingList
@@ -122,6 +123,7 @@ public interface ShoppingListMapper {
 
     /**
      * Преобразует ShoppingListResponseDTO в ShoppingList.
+     * Игнорирует поля id и createdDate.
      *
      * @param shoppingListResponseDTO DTO ShoppingListResponseDTO
      * @return сущность ShoppingList

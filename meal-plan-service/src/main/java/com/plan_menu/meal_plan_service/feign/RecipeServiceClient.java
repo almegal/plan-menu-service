@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.List;
 
-@FeignClient(name="${app.feign.config.name.recipe}")
+@FeignClient(name="recipe-service")
 public interface RecipeServiceClient {
     @GetMapping("/recipes/{ids}")
     List<RecipeWithIngredientDto> getListRecipes(List<Long> ids);

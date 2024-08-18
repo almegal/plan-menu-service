@@ -1,6 +1,5 @@
 package com.plan_menu.meal_plan_service.component;
 
-import com.plan_menu.meal_plan_service.dto.IngredientDto;
 import com.plan_menu.meal_plan_service.dto.MealPlanEntryDto;
 import com.plan_menu.meal_plan_service.dto.RecipeWithIngredientDto;
 import com.plan_menu.meal_plan_service.dto.ShoppingListRequestDto;

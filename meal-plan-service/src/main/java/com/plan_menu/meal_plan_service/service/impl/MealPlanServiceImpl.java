@@ -13,7 +13,6 @@ import com.plan_menu.meal_plan_service.service.NotificationService;
 import com.plan_menu.meal_plan_service.service.OrderService;
 import com.plan_menu.meal_plan_service.service.RecipeService;
 import feign.FeignException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,20 +36,33 @@ public class MealPlanServiceImpl implements MealPlanService {
     private final MapperMealPlanEntry mapperMealPlanEntry;
 
     // Сервис для работы с рецептами.
-    @Autowired
-    private RecipeService recipeService;
+
+    private final RecipeService recipeService;
 
     // Сервис для оформления заказов.
-    @Autowired
-    private OrderService orderService;
+    private final OrderService orderService;
 
     // Сервис для отправки уведомлений.
-    @Autowired
-    private NotificationService notificationService;
+    private final NotificationService notificationService;
 
     // Компонент для создания списка покупок.
-    @Autowired
-    private ShopListMaker shopListMaker;
+    private final ShopListMaker shopListMaker;
+
+    public MealPlanServiceImpl(MealPlanRepository repository,
+                               MapperMealPlan mapperMealPlan,
+                               MapperMealPlanEntry mapperMealPlanEntry,
+                               RecipeService recipeService,
+                               OrderService orderService,
+                               NotificationService notificationService,
+                               ShopListMaker shopListMaker) {
+        this.repository = repository;
+        this.mapperMealPlan = mapperMealPlan;
+        this.mapperMealPlanEntry = mapperMealPlanEntry;
+        this.recipeService = recipeService;
+        this.orderService = orderService;
+        this.notificationService = notificationService;
+        this.shopListMaker = shopListMaker;
+    }
 
     /**
      * Конструктор для инъекции зависимостей.
@@ -59,13 +71,7 @@ public class MealPlanServiceImpl implements MealPlanService {
      * @param mapperMealPlan      маппер для преобразования между MealPlanEntity и MealPlanDto
      * @param mapperMealPlanEntry маппер для преобразования между MealPlanEntryEntity и MealPlanEntryDto
      */
-    public MealPlanServiceImpl(MealPlanRepository repository,
-                               MapperMealPlan mapperMealPlan,
-                               MapperMealPlanEntry mapperMealPlanEntry) {
-        this.repository = repository;
-        this.mapperMealPlan = mapperMealPlan;
-        this.mapperMealPlanEntry = mapperMealPlanEntry;
-    }
+
 
     @Override
     public List<MealPlanEntryDto> getMealPlan(Long userId) {

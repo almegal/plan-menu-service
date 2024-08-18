@@ -5,7 +5,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 
-@FeignClient(name = "${app.feign.config.name.order}")
+@FeignClient(name = "order-service")
 public interface OrderServiceClient {
     @PostMapping("/orders/")
     HttpStatus sendListOrder(ShoppingListRequestDto lists);

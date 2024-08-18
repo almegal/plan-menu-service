@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: notification-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/notification_service
+    username: postgres
+    password: postgres
+    driverClassName: org.postgresql.Driver
+  liquibase:
+    change-log: db.changelog/db.changelog-master.yaml
+    drop-first: true

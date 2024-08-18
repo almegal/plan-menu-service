@@ -2,6 +2,7 @@ package com.plan_menu.shopping.service;
 
 import com.plan_menu.shopping.dto.ProductAvailabilityResponseDTO;
 import com.plan_menu.shopping.dto.ProductDTO;
+import com.plan_menu.shopping.entity.ShoppingList;
 import java.util.List;
 
 /**
@@ -35,4 +36,25 @@ public interface ProductService {
      * @return список DTO с информацией о найденных продуктах
      */
     List<ProductDTO> searchProductsByTitle(String titlePart);
+
+    /**
+     * Отправляет запрос на заказ продуктов из списка покупок.
+     *
+     * @param shoppingList список покупок
+     */
+    void placeOrder(ShoppingList shoppingList);
+
+    /**
+     * Инициирует процесс сборки продуктов из списка покупок.
+     *
+     * @param shoppingList список покупок
+     */
+    void startCollection(ShoppingList shoppingList);
+
+    /**
+     * Инициирует процесс доставки продуктов из списка покупок.
+     *
+     * @param shoppingList список покупок
+     */
+    void startDelivery(ShoppingList shoppingList);
 }

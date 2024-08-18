@@ -3,9 +3,11 @@ package com.plan_menu.shopping.service.impl;
 import com.plan_menu.shopping.dto.ProductAvailabilityResponseDTO;
 import com.plan_menu.shopping.dto.ProductDTO;
 import com.plan_menu.shopping.entity.Product;
+import com.plan_menu.shopping.entity.ShoppingList;
 import com.plan_menu.shopping.exception.ProductNotFoundException;
 import com.plan_menu.shopping.mapper.ShoppingListMapper;
 import com.plan_menu.shopping.repository.ProductRepository;
+import com.plan_menu.shopping.service.NotificationService;
 import com.plan_menu.shopping.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,27 +24,14 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
     private final ShoppingListMapper shoppingListMapper;
+    private final NotificationService notificationService;
 
-    /**
-     * Проверяет доступность продукта на складе.
-     *
-     * @param productId идентификатор продукта
-     * @param count количество продукта
-     * @return DTO с информацией о доступности продукта
-     */
     @Override
     public ProductAvailabilityResponseDTO checkProductAvailability(Long productId, int count) {
         boolean isAvailable = productRepository.isProductAvailable(productId, count);
         return new ProductAvailabilityResponseDTO(productId, isAvailable, null);
     }
 
-    /**
-     * Получает информацию о продукте по его идентификатору.
-     *
-     * @param productId идентификатор продукта
-     * @return DTO с информацией о продукте
-     * @throws ProductNotFoundException если продукт не найден
-     */
     @Override
     public ProductDTO getProductById(Long productId) {
         Product product = productRepository.findById(productId)
@@ -50,17 +39,54 @@ public class ProductServiceImpl implements ProductService {
         return shoppingListMapper.toProductDTO(product);
     }
 
-    /**
-     * Ищет продукты по части названия.
-     *
-     * @param titlePart часть названия продукта
-     * @return список DTO с информацией о найденных продуктах
-     */
     @Override
     public List<ProductDTO> searchProductsByTitle(String titlePart) {
         List<Product> products = productRepository.findByTitleContaining(titlePart);
         return products.stream()
                 .map(shoppingListMapper::toProductDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void placeOrder(ShoppingList shoppingList) {
+        System.out.println("Заказ продуктов из списка покупок: " + shoppingList.getId());
+    }
+
+    @Override
+    public void startCollection(ShoppingList shoppingList) {
+        System.out.println("Начало сборки продуктов из списка покупок: " + shoppingList.getId());
+        shoppingList.getItems().forEach(item -> {
+            Product product = item.getProduct();
+            int quantity = item.getQuantity();
+
+            if (!productRepository.isProductAvailable(product.getId(), quantity)) {
+                throw new RuntimeException("Продукт " + product.getId() + " не доступен в нужном количестве");
+            }
+
+            product.setStatus("IN_COLLECTION");
+            productRepository.save(product);
+        });
+
+        notificationService.sendNotificationToStaff("Начало сборки продуктов для списка покупок: " + shoppingList.getId());
+    }
+
+    @Override
+    public void startDelivery(ShoppingList shoppingList) {
+        System.out.println("Начало доставки продуктов из списка покупок: " + shoppingList.getId());
+
+        boolean allProductsCollected = shoppingList.getItems().stream()
+                .allMatch(item -> "COLLECTED".equals(item.getProduct().getStatus()));
+
+        if (!allProductsCollected) {
+            throw new RuntimeException("Не все продукты собраны для списка покупок: " + shoppingList.getId());
+        }
+
+        shoppingList.getItems().forEach(item -> {
+            Product product = item.getProduct();
+            product.setStatus("IN_DELIVERY");
+            productRepository.save(product);
+        });
+
+        notificationService.sendNotificationToUser(shoppingList.getUserId(), "Доставка продуктов для списка покупок " + shoppingList.getId() + " начата");
     }
 }

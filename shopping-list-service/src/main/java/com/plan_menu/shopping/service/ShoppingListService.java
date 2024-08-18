@@ -4,7 +4,7 @@ import com.plan_menu.shopping.dto.ShoppingListRequestDTO;
 import com.plan_menu.shopping.dto.ShoppingListResponseDTO;
 
 /**
- * Интерфейс для сервиса списков покупок.
+ * Интерфейс для сервиса списка покупок.
  * Предоставляет методы для управления списками покупок.
  */
 public interface ShoppingListService {
@@ -12,45 +12,50 @@ public interface ShoppingListService {
     /**
      * Создает новый список покупок.
      *
-     * @param requestDTO данные для создания списка покупок
+     * @param requestDTO DTO с данными для создания списка покупок
      * @return DTO с информацией о созданном списке покупок
      */
     ShoppingListResponseDTO createShoppingList(ShoppingListRequestDTO requestDTO);
 
     /**
-     * Возвращает список покупок по его идентификатору.
+     * Получает список покупок по его идентификатору.
      *
      * @param id идентификатор списка покупок
      * @return DTO с информацией о списке покупок
+     * @throws RuntimeException если список покупок не найден
      */
     ShoppingListResponseDTO getShoppingListById(Long id);
 
     /**
-     * Оптимизирует список покупок для пользователя.
+     * Оптимизирует список покупок.
      *
      * @param shoppingListId идентификатор списка покупок
-     * @return DTO с оптимизированным списком покупок
+     * @return DTO с информацией об оптимизированном списке покупок
+     * @throws RuntimeException если список покупок не найден
      */
     ShoppingListResponseDTO optimizeShoppingList(Long shoppingListId);
 
     /**
-     * Инициирует процесс заказа товаров из списка покупок.
+     * Инициирует заказ продуктов из списка покупок.
      *
      * @param shoppingListId идентификатор списка покупок
+     * @throws RuntimeException если список покупок не найден или не все товары доступны для заказа
      */
     void initiateProductOrder(Long shoppingListId);
 
     /**
-     * Запускает процесс сборки товаров для доставки.
+     * Инициирует процесс сборки продуктов из списка покупок.
      *
      * @param shoppingListId идентификатор списка покупок
+     * @throws RuntimeException если список покупок не найден
      */
     void startProductCollection(Long shoppingListId);
 
     /**
-     * Запускает процесс доставки товаров.
+     * Инициирует процесс доставки продуктов из списка покупок.
      *
      * @param shoppingListId идентификатор списка покупок
+     * @throws RuntimeException если список покупок не найден
      */
     void startProductDelivery(Long shoppingListId);
 }

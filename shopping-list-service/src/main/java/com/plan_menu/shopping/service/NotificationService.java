@@ -5,21 +5,36 @@ import com.plan_menu.shopping.dto.NotificationRequestDTO;
 
 /**
  * Интерфейс для сервиса уведомлений.
- * Предоставляет методы для отправки уведомлений пользователям.
+ * Предоставляет методы для отправки уведомлений пользователям и сотрудникам.
  */
 public interface NotificationService {
 
     /**
      * Отправляет уведомление пользователю.
      *
-     * @param notificationRequestDTO данные для отправки уведомления
+     * @param notificationRequestDTO DTO с данными для отправки уведомления
      */
     void sendNotification(NotificationRequestDTO notificationRequestDTO);
 
     /**
+     * Отправляет уведомление сотрудникам.
+     *
+     * @param message сообщение для сотрудников
+     */
+    void sendNotificationToStaff(String message);
+
+    /**
+     * Отправляет уведомление пользователю.
+     *
+     * @param userId идентификатор пользователя
+     * @param message сообщение для пользователя
+     */
+    void sendNotificationToUser(Long userId, String message);
+
+    /**
      * Отправляет уведомление об ошибке пользователю.
      *
-     * @param errorNotificationRequestDTO данные для отправки уведомления об ошибке
+     * @param errorDTO DTO с данными об ошибке
      */
-    void sendErrorNotification(ErrorDTO errorNotificationRequestDTO);
+    void sendErrorNotification(ErrorDTO errorDTO);
 }

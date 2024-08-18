@@ -7,7 +7,7 @@ import jakarta.persistence.*;
 /**
  * Сущность, представляющая продукт.
  * Содержит информацию о продукте, такую как идентификатор, название, вес упаковки,
- * краткое описание, количество на складе и единица измерения.
+ * краткое описание, количество на складе, единица измерения и статус.
  */
 @Data
 @Entity
@@ -32,4 +32,6 @@ public class Product {
 
     @Enumerated(EnumType.STRING)
     private MeasurementUnit unit;
+
+    private String status;
 }

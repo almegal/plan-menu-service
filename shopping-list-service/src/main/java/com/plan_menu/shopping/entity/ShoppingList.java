@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Сущность, представляющая список покупок.
  * Содержит информацию о списке покупок, такую как идентификатор, название, описание,
- * дата создания, статус, статус сборки, статус готовности и список элементов.
+ * дата создания, статус, статус сборки, статус готовности, идентификатор пользователя и список элементов.
  */
 @Data
 @Entity
@@ -34,6 +34,9 @@ public class ShoppingList {
 
     @Column(name = "readiness_status")
     private String readinessStatus;
+
+    @Column(name = "user_id")
+    private Long userId;
 
     @OneToMany(mappedBy = "shoppingList", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ShoppingListItem> items;

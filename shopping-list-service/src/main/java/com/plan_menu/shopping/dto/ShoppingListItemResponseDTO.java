@@ -8,5 +8,5 @@ public record ShoppingListItemResponseDTO(
         Long productId,
         String productName,
         double providedVolume,
-        double providedWeight
-) {}
+        double providedWeight) {
+}

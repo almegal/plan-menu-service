@@ -1,28 +1,40 @@
 package com.plan_menu.shopping.entity;
 
-import jakarta.persistence.*;
 import lombok.Data;
-
-import java.util.Date;
+import jakarta.persistence.*;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * Сущность, представляющая список покупок в базе данных.
- * Содержит идентификатор списка покупок, идентификатор пользователя, название,
- * список товаров и дату создания.
+ * Сущность, представляющая список покупок.
+ * Содержит информацию о списке покупок, такую как идентификатор, название, описание,
+ * дата создания, статус, статус сборки, статус готовности и список элементов.
  */
 @Data
 @Entity
+@Table(name = "shopping_lists")
 public class ShoppingList {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long userId;
+    @Column(nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "shoppingList", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ShoppingListItem> items;
+    private String description;
 
-    private Date createdDate;
+    @Column(name = "created_date")
+    private LocalDateTime createdDate;
+
+    private String status;
+
+    @Column(name = "collection_status")
+    private String collectionStatus;
+
+    @Column(name = "readiness_status")
+    private String readinessStatus;
+
+    @OneToMany(mappedBy = "shoppingList", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<ShoppingListItem> items;
 }

@@ -1,13 +1,17 @@
 package com.plan_menu.shopping.dto;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
  * Объект передачи данных (DTO) для ответа с информацией о списке покупок.
- * Этот DTO содержит идентификатор списка покупок, название и список товаров.
+ * Содержит информацию о списке покупок, такую как идентификатор, название, описание,
+ * дата создания и список элементов.
  */
 public record ShoppingListResponseDTO(
         Long id,
         String name,
+        String description,
+        LocalDateTime createdDate,
         List<ShoppingListItemRequestDTO> items) {
 }

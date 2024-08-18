@@ -3,6 +3,7 @@ package com.plan_menu.shopping.mapper;
 import com.plan_menu.shopping.dto.*;
 import com.plan_menu.shopping.entity.*;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 import java.util.List;
 
@@ -100,4 +101,32 @@ public interface ShoppingListMapper {
      * @return DTO NotificationRequestDTO
      */
     NotificationRequestDTO toNotificationRequestDTO(NotificationDTO notificationDTO);
+
+    /**
+     * Преобразует ShoppingListRequestDTO в ShoppingList.
+     *
+     * @param shoppingListRequestDTO DTO ShoppingListRequestDTO
+     * @return сущность ShoppingList
+     */
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdDate", ignore = true)
+    ShoppingList toShoppingList(ShoppingListRequestDTO shoppingListRequestDTO);
+
+    /**
+     * Преобразует ShoppingList в ShoppingListRequestDTO.
+     *
+     * @param shoppingList сущность ShoppingList
+     * @return DTO ShoppingListRequestDTO
+     */
+    ShoppingListRequestDTO toShoppingListRequestDTO(ShoppingList shoppingList);
+
+    /**
+     * Преобразует ShoppingListResponseDTO в ShoppingList.
+     *
+     * @param shoppingListResponseDTO DTO ShoppingListResponseDTO
+     * @return сущность ShoppingList
+     */
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdDate", ignore = true)
+    ShoppingList toShoppingList(ShoppingListResponseDTO shoppingListResponseDTO);
 }

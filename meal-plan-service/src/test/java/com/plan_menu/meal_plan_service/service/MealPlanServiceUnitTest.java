@@ -1,5 +1,6 @@
 package com.plan_menu.meal_plan_service.service;
 
+import com.plan_menu.meal_plan_service.component.ShopListMaker;
 import com.plan_menu.meal_plan_service.dto.MealPlanDto;
 import com.plan_menu.meal_plan_service.dto.MealPlanEntryDto;
 import com.plan_menu.meal_plan_service.entity.MealPlanEntity;
@@ -18,6 +19,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 import java.util.Optional;
@@ -52,6 +54,14 @@ public class MealPlanServiceUnitTest {
     MapperMealPlanEntryImpl mapperMealPlanEntry;
     @Spy
     MapperMealPlanImp mapperMealPlan;
+    @Spy
+    OrderService orderService;
+    @Spy
+    NotificationService notificationService;
+    @Spy
+    RecipeService recipeService;
+    @Spy
+    ShopListMaker shopListMaker;
     /**
      * Инъектируемый объект сервиса {@link MealPlanServiceImpl}, который будет тестироваться.
      * Все зависимости будут заменены на mock-объекты.
@@ -122,13 +132,17 @@ public class MealPlanServiceUnitTest {
         // Настройка поведения мока
         when(repository.save(MEAL_PLAN_ENTITY)).thenReturn(MEAL_PLAN_ENTITY);
         when(mapperMealPlan.mapToEntity(MEAL_PLAN_ENTITY_DTO)).thenReturn(MEAL_PLAN_ENTITY);
+        when(orderService.makeOrder(any())).thenReturn(HttpStatus.OK);
         // Внутри метода используется приватная проверка существует пользователь или нет
         when(repository.findByUserId(anyLong())).thenReturn(Optional.empty());
         // Вызов тестируемого метода
         service.saveMealPlan(MEAL_PLAN_ENTITY_DTO);
-        // Проверка вызова маппера
+        // Проверка вызовов
         verify(mapperMealPlan, times(1)).mapToEntity(MEAL_PLAN_ENTITY_DTO);
         verify(mapperMealPlanEntry, times(1)).mapToEntity(any(MealPlanEntryDto.class));
         verify(repository, times(1)).save(MEAL_PLAN_ENTITY);
+        verify(orderService, times(1)).makeOrder(any());
+        verify(notificationService, times(1)).sendNotification(any());
+        verify(recipeService, times(1)).getRecipes(any());
     }
 }

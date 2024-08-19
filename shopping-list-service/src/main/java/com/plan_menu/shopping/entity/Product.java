@@ -34,4 +34,8 @@ public class Product {
     private MeasurementUnit unit;
 
     private String status;
+
+    public int getVolumeOrWeight() {
+        return weightPerPack.intValue();
+    }
 }

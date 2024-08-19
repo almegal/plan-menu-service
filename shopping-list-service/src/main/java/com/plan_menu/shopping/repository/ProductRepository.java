@@ -50,4 +50,13 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
      */
     @Query("SELECT p FROM Product p WHERE p.title LIKE %:titlePart%")
     List<Product> findByTitleContaining(String titlePart);
+
+    /**
+     * Находит доступные продукты по идентификатору продукта.
+     *
+     * @param productId идентификатор продукта.
+     * @return список доступных продуктов.
+     */
+    @Query("SELECT p FROM Product p WHERE p.id = :productId AND p.countOnStorage > 0")
+    List<Product> findAvailableProductsByProductId(Long productId);
 }

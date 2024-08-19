@@ -36,6 +36,7 @@ public interface ShoppingListMapper {
      * @param shoppingListItem сущность ShoppingListItem
      * @return DTO ShoppingListItemRequestDTO
      */
+    @Mapping(target = "optimizedProducts", ignore = true)
     ShoppingListItemRequestDTO toShoppingListItemRequestDTO(ShoppingListItem shoppingListItem);
 
     /**
@@ -44,6 +45,7 @@ public interface ShoppingListMapper {
      * @param shoppingListItemRequestDTO DTO ShoppingListItemRequestDTO
      * @return сущность ShoppingListItem
      */
+    @Mapping(target = "optimizedProducts", ignore = true)
     ShoppingListItem toShoppingListItem(ShoppingListItemRequestDTO shoppingListItemRequestDTO);
 
     /**

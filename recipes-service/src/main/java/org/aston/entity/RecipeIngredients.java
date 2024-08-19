@@ -18,7 +18,6 @@ import lombok.ToString;
 @Table(name = RecipeIngredients.TABLE_NAME)
 @NoArgsConstructor
 @AllArgsConstructor
-@RequiredArgsConstructor
 @Getter
 @Setter
 @ToString
@@ -30,6 +29,9 @@ public class RecipeIngredients {
 
     @Column(name = "amount", nullable = false)
     private double amount;
+
+    @Column(name = "ingredient_title")
+    private String ingredientTitle;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recipe_id", insertable = false, updatable = false)

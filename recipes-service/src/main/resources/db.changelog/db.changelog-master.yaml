@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - include:
+      file: db.changelog/changeset/create_categoriesTable.sql
+  - include:
+      file: db.changelog/changeset/create_recipesTable.sql
+  - include:
+      file: db.changelog/changeset/create_productsTable.sql
+  - include:
+      file: db.changelog/changeset/create_recipeIngredientsTable.sql

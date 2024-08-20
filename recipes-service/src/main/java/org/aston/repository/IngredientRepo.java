@@ -9,5 +9,5 @@ import java.util.List;
 
 @Repository
 public interface IngredientRepo extends JpaRepository<RecipeIngredients, RecipeIngredientPK> {
-    List<RecipeIngredients> findByRecipeRecipeId(long recipeId);
+    List<RecipeIngredients> findByIdRecipeId(long recipeId);
 }

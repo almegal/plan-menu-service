@@ -8,15 +8,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-import java.util.Set;
+import lombok.*;
 
 @Entity
 @Table(name = Recipe.TABLE_NAME)
@@ -24,6 +17,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Getter
 @Setter(AccessLevel.PUBLIC)
+@Builder
 public class Recipe {
     public static final String TABLE_NAME = "recipes";
 
@@ -41,7 +35,4 @@ public class Recipe {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", referencedColumnName = "category_id")
     private Category category;
-
-    @OneToMany(mappedBy = "recipe", fetch = FetchType.LAZY)
-    private Set<RecipeIngredients> ingredients;
 }

@@ -1,8 +1,10 @@
 CREATE TABLE IF NOT EXISTS recipe_ingredients (
     recipe_id SERIAL NOT NULL,
     product_id SERIAL NOT NULL,
+
     amount DECIMAL(10,2) NOT NULL,
     ingredient_title VARCHAR(30) NOT NULL,
+
     PRIMARY KEY (recipe_id, product_id),
     CONSTRAINT fk_recipe_ingredient_recipes_id FOREIGN KEY (recipe_id) REFERENCES recipes(recipe_id),
     CONSTRAINT fk_recipe_ingredient_products_id FOREIGN KEY (product_id) REFERENCES products(product_id)

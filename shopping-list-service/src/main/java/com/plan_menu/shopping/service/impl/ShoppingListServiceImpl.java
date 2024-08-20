@@ -2,10 +2,13 @@ package com.plan_menu.shopping.service.impl;
 
 import com.plan_menu.shopping.dto.ShoppingListRequestDTO;
 import com.plan_menu.shopping.dto.ShoppingListResponseDTO;
+import com.plan_menu.shopping.dto.NotificationRequestDTO;
 import com.plan_menu.shopping.entity.Product;
 import com.plan_menu.shopping.entity.ShoppingList;
 import com.plan_menu.shopping.entity.ShoppingListItem;
 import com.plan_menu.shopping.exception.ShoppingListNotFoundException;
+import com.plan_menu.shopping.feign.MenuPlannerClient;
+import com.plan_menu.shopping.feign.NotificationClient;
 import com.plan_menu.shopping.repository.ProductRepository;
 import com.plan_menu.shopping.repository.ShoppingListRepository;
 import com.plan_menu.shopping.service.NotificationService;
@@ -30,25 +33,54 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     private final NotificationService notificationService;
     private final ProductService productService;
     private final ProductRepository productRepository;
+    private final MenuPlannerClient menuPlannerClient;
+    private final NotificationClient notificationClient;
 
+    /**
+     * Конструктор для внедрения зависимостей.
+     *
+     * @param shoppingListRepository репозиторий для работы со списками покупок
+     * @param notificationService сервис уведомлений
+     * @param productService сервис продуктов
+     * @param productRepository репозиторий для работы с продуктами
+     * @param menuPlannerClient клиент для взаимодействия с Meal Planning Service
+     * @param notificationClient клиент для отправки уведомлений
+     */
     public ShoppingListServiceImpl(ShoppingListRepository shoppingListRepository,
                                    NotificationService notificationService,
                                    ProductService productService,
-                                   ProductRepository productRepository) {
+                                   ProductRepository productRepository,
+                                   MenuPlannerClient menuPlannerClient,
+                                   NotificationClient notificationClient) {
         this.shoppingListRepository = shoppingListRepository;
         this.notificationService = notificationService;
         this.productService = productService;
         this.productRepository = productRepository;
+        this.menuPlannerClient = menuPlannerClient;
+        this.notificationClient = notificationClient;
     }
 
     @Override
     public ShoppingListResponseDTO createShoppingList(ShoppingListRequestDTO requestDTO) {
+        // Получение данных от Meal Planning Service
+        ShoppingListResponseDTO mealPlan = menuPlannerClient.getMealPlanById(requestDTO.mealPlanId());
+
+        // Создание списка покупок на основе mealPlan
         ShoppingList shoppingList = new ShoppingList();
         shoppingList.setName(requestDTO.name());
         shoppingList.setDescription(requestDTO.description());
         shoppingList.setCreatedDate(LocalDateTime.now());
         shoppingList.setStatus("NEW");
         shoppingList = shoppingListRepository.save(shoppingList);
+
+        // Отправка уведомления пользователю
+        NotificationRequestDTO notificationRequestDTO = new NotificationRequestDTO(
+                requestDTO.userId(),
+                "Ваш список покупок создан",
+                "INFO"
+        );
+        notificationClient.sendNotification(notificationRequestDTO);
+
         return convertToResponseDTO(shoppingList);
     }
 

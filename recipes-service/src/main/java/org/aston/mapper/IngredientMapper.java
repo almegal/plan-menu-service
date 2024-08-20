@@ -17,8 +17,6 @@ public class IngredientMapper {
         return new IngredientDTO(ingredients.getId().getProductId(),
                 ingredients.getAmount(), ingredients.getIngredientTitle());
 
-    }
-
     public List<IngredientDTO> mapEntitiesToDtos(List<RecipeIngredients> ingredientsList) {
         if ( ingredientsList == null ) {
             return null;

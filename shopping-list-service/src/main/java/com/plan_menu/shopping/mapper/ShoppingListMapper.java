@@ -8,129 +8,187 @@ import org.mapstruct.Mapping;
 import java.util.List;
 
 /**
- * Интерфейс маппера для преобразования между сущностями и DTO.
- * Использует MapStruct для генерации реализации маппера.
+ * Маппер для преобразования между сущностями и DTO в контексте списка покупок.
  */
 @Mapper(componentModel = "spring")
 public interface ShoppingListMapper {
 
     /**
-     * Преобразует ShoppingList в ShoppingListDTO.
+     * Преобразует сущность {@link ShoppingList} в {@link ShoppingListDTO}.
      *
-     * @param shoppingList сущность ShoppingList
-     * @return DTO ShoppingListDTO
+     * @param shoppingList Сущность списка покупок.
+     * @return DTO списка покупок.
      */
+    @Mapping(source = "description", target = "description")
+    @Mapping(source = "createdDate", target = "createdDate")
+    @Mapping(source = "status", target = "status")
+    @Mapping(source = "collectionStatus", target = "collectionStatus")
+    @Mapping(source = "readinessStatus", target = "readinessStatus")
+    @Mapping(source = "userId", target = "userId")
+    @Mapping(source = "items", target = "items")
     ShoppingListDTO toShoppingListDTO(ShoppingList shoppingList);
 
     /**
-     * Преобразует ShoppingListDTO в ShoppingList.
+     * Преобразует {@link ShoppingListDTO} в сущность {@link ShoppingList}.
      *
-     * @param shoppingListDTO DTO ShoppingListDTO
-     * @return сущность ShoppingList
+     * @param shoppingListDTO DTO списка покупок.
+     * @return Сущность списка покупок.
      */
+    @Mapping(source = "description", target = "description")
+    @Mapping(source = "createdDate", target = "createdDate")
+    @Mapping(source = "status", target = "status")
+    @Mapping(source = "collectionStatus", target = "collectionStatus")
+    @Mapping(source = "readinessStatus", target = "readinessStatus")
+    @Mapping(source = "userId", target = "userId")
+    @Mapping(source = "items", target = "items")
     ShoppingList toShoppingList(ShoppingListDTO shoppingListDTO);
 
     /**
-     * Преобразует ShoppingListItem в ShoppingListItemRequestDTO.
+     * Преобразует сущность {@link ShoppingListItem} в {@link ShoppingListItemDTO}.
      *
-     * @param shoppingListItem сущность ShoppingListItem
-     * @return DTO ShoppingListItemRequestDTO
+     * @param shoppingListItem Сущность элемента списка покупок.
+     * @return DTO элемента списка покупок.
      */
-    @Mapping(target = "optimizedProducts", ignore = true)
-    ShoppingListItemRequestDTO toShoppingListItemRequestDTO(ShoppingListItem shoppingListItem);
+    @Mapping(source = "product.id", target = "productId")
+    @Mapping(source = "quantity", target = "quantity")
+    @Mapping(source = "unit", target = "unit")
+    @Mapping(source = "shoppingList.id", target = "shoppingListId") // Маппинг shoppingListId
+    ShoppingListItemDTO toShoppingListItemDTO(ShoppingListItem shoppingListItem);
 
     /**
-     * Преобразует ShoppingListItemRequestDTO в ShoppingListItem.
+     * Преобразует {@link ShoppingListItemDTO} в сущность {@link ShoppingListItem}.
      *
-     * @param shoppingListItemRequestDTO DTO ShoppingListItemRequestDTO
-     * @return сущность ShoppingListItem
+     * @param shoppingListItemDTO DTO элемента списка покупок.
+     * @return Сущность элемента списка покупок.
      */
-    @Mapping(target = "optimizedProducts", ignore = true)
-    ShoppingListItem toShoppingListItem(ShoppingListItemRequestDTO shoppingListItemRequestDTO);
+    @Mapping(source = "productId", target = "product.id")
+    @Mapping(source = "quantity", target = "quantity")
+    @Mapping(source = "unit", target = "unit")
+    @Mapping(source = "shoppingListId", target = "shoppingList.id") // Маппинг shoppingListId
+    ShoppingListItem toShoppingListItem(ShoppingListItemDTO shoppingListItemDTO);
 
     /**
-     * Преобразует Product в ProductDTO.
+     * Преобразует сущность {@link Product} в {@link ProductDTO}.
      *
-     * @param product сущность Product
-     * @return DTO ProductDTO
+     * @param product Сущность продукта.
+     * @return DTO продукта.
      */
+    @Mapping(source = "id", target = "id")
+    @Mapping(source = "title", target = "title")
+    @Mapping(source = "weightPerPack", target = "weightPerPack")
+    @Mapping(source = "descriptionShort", target = "descriptionShort")
+    @Mapping(source = "countOnStorage", target = "countOnStorage")
+    @Mapping(source = "unit", target = "unit")
+    @Mapping(source = "status", target = "status") // Маппинг status
     ProductDTO toProductDTO(Product product);
 
     /**
-     * Преобразует ProductDTO в Product.
+     * Преобразует {@link ProductDTO} в сущность {@link Product}.
      *
-     * @param productDTO DTO ProductDTO
-     * @return сущность Product
+     * @param productDTO DTO продукта.
+     * @return Сущность продукта.
      */
+    @Mapping(source = "id", target = "id")
+    @Mapping(source = "title", target = "title")
+    @Mapping(source = "weightPerPack", target = "weightPerPack")
+    @Mapping(source = "descriptionShort", target = "descriptionShort")
+    @Mapping(source = "countOnStorage", target = "countOnStorage")
+    @Mapping(source = "unit", target = "unit")
+    @Mapping(source = "status", target = "status") // Маппинг status
     Product toProduct(ProductDTO productDTO);
 
     /**
-     * Преобразует список ShoppingListItem в список ShoppingListItemRequestDTO.
+     * Преобразует список сущностей {@link ShoppingListItem} в список {@link ShoppingListItemDTO}.
      *
-     * @param shoppingListItems список сущностей ShoppingListItem
-     * @return список DTO ShoppingListItemRequestDTO
+     * @param shoppingListItems Список сущностей элементов списка покупок.
+     * @return Список DTO элементов списка покупок.
      */
-    List<ShoppingListItemRequestDTO> toShoppingListItemRequestDTOs(List<ShoppingListItem> shoppingListItems);
+    List<ShoppingListItemDTO> toShoppingListItemDTOs(List<ShoppingListItem> shoppingListItems);
 
     /**
-     * Преобразует список ShoppingListItemRequestDTO в список ShoppingListItem.
+     * Преобразует список {@link ShoppingListItemDTO} в список сущностей {@link ShoppingListItem}.
      *
-     * @param shoppingListItemRequestDTOs список DTO ShoppingListItemRequestDTO
-     * @return список сущностей ShoppingListItem
+     * @param shoppingListItemDTOs Список DTO элементов списка покупок.
+     * @return Список сущностей элементов списка покупок.
      */
-    List<ShoppingListItem> toShoppingListItems(List<ShoppingListItemRequestDTO> shoppingListItemRequestDTOs);
+    List<ShoppingListItem> toShoppingListItems(List<ShoppingListItemDTO> shoppingListItemDTOs);
 
     /**
-     * Преобразует ShoppingList в ShoppingListResponseDTO.
+     * Преобразует сущность {@link ShoppingList} в {@link ShoppingListResponseDTO}.
      *
-     * @param shoppingList сущность ShoppingList
-     * @return DTO ShoppingListResponseDTO
+     * @param shoppingList Сущность списка покупок.
+     * @return DTO ответа со списком покупок.
      */
+    @Mapping(source = "id", target = "id")
+    @Mapping(source = "name", target = "name")
+    @Mapping(source = "description", target = "description")
+    @Mapping(source = "createdDate", target = "createdDate")
+    @Mapping(source = "status", target = "status")
+    @Mapping(source = "collectionStatus", target = "collectionStatus")
+    @Mapping(source = "readinessStatus", target = "readinessStatus")
+    @Mapping(source = "items", target = "items")
     ShoppingListResponseDTO toShoppingListResponseDTO(ShoppingList shoppingList);
 
     /**
-     * Преобразует NotificationRequestDTO в NotificationDTO.
+     * Преобразует {@link NotificationRequestDTO} в {@link NotificationDTO}.
      *
-     * @param notificationRequestDTO DTO NotificationRequestDTO
-     * @return DTO NotificationDTO
+     * @param notificationRequestDTO DTO запроса на уведомление.
+     * @return DTO уведомления.
      */
+    @Mapping(source = "userId", target = "userId")
+    @Mapping(source = "message", target = "message")
     NotificationDTO toNotificationDTO(NotificationRequestDTO notificationRequestDTO);
 
     /**
-     * Преобразует NotificationDTO в NotificationRequestDTO.
+     * Преобразует {@link NotificationDTO} в {@link NotificationRequestDTO}.
      *
-     * @param notificationDTO DTO NotificationDTO
-     * @return DTO NotificationRequestDTO
+     * @param notificationDTO DTO уведомления.
+     * @return DTO запроса на уведомление.
      */
+    @Mapping(source = "userId", target = "userId")
+    @Mapping(source = "message", target = "message")
     NotificationRequestDTO toNotificationRequestDTO(NotificationDTO notificationDTO);
 
     /**
-     * Преобразует ShoppingListRequestDTO в ShoppingList.
-     * Игнорирует поля id и createdDate.
+     * Преобразует {@link ShoppingListRequestDTO} в сущность {@link ShoppingList}.
      *
-     * @param shoppingListRequestDTO DTO ShoppingListRequestDTO
-     * @return сущность ShoppingList
+     * @param shoppingListRequestDTO DTO запроса на создание списка покупок.
+     * @return Сущность списка покупок.
      */
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdDate", ignore = true)
+    @Mapping(source = "name", target = "name")
+    @Mapping(source = "description", target = "description")
+    @Mapping(source = "mealPlanId", target = "mealPlanId")
+    @Mapping(source = "userId", target = "userId")
+    @Mapping(source = "items", target = "items")
     ShoppingList toShoppingList(ShoppingListRequestDTO shoppingListRequestDTO);
 
     /**
-     * Преобразует ShoppingList в ShoppingListRequestDTO.
+     * Преобразует {@link ShoppingList} в {@link ShoppingListRequestDTO}.
      *
-     * @param shoppingList сущность ShoppingList
-     * @return DTO ShoppingListRequestDTO
+     * @param shoppingList Сущность списка покупок.
+     * @return DTO запроса на создание списка покупок.
      */
+    @Mapping(source = "name", target = "name")
+    @Mapping(source = "description", target = "description")
+    @Mapping(source = "userId", target = "userId")
+    @Mapping(source = "items", target = "items")
     ShoppingListRequestDTO toShoppingListRequestDTO(ShoppingList shoppingList);
 
     /**
-     * Преобразует ShoppingListResponseDTO в ShoppingList.
-     * Игнорирует поля id и createdDate.
+     * Преобразует {@link ShoppingListResponseDTO} в сущность {@link ShoppingList}.
      *
-     * @param shoppingListResponseDTO DTO ShoppingListResponseDTO
-     * @return сущность ShoppingList
+     * @param shoppingListResponseDTO DTO ответа со списком покупок.
+     * @return Сущность списка покупок.
      */
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdDate", ignore = true)
+    @Mapping(source = "name", target = "name")
+    @Mapping(source = "description", target = "description")
+    @Mapping(source = "status", target = "status")
+    @Mapping(source = "collectionStatus", target = "collectionStatus")
+    @Mapping(source = "readinessStatus", target = "readinessStatus")
+    @Mapping(source = "items", target = "items")
     ShoppingList toShoppingList(ShoppingListResponseDTO shoppingListResponseDTO);
 }

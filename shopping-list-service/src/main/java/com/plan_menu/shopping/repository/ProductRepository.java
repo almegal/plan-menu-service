@@ -58,5 +58,14 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
      * @return список доступных продуктов.
      */
     @Query("SELECT p FROM Product p WHERE p.id = :productId AND p.countOnStorage > 0")
-    List<Product> findAvailableProductsByProductId(Long productId);
+    List<Product> findAvailableProducts(Long productId);
+
+    /**
+     * Находит продукты по их статусу.
+     *
+     * @param status статус продукта.
+     * @return список продуктов с указанным статусом.
+     */
+    @Query("SELECT p FROM Product p WHERE p.status = :status")
+    List<Product> findByStatus(String status);
 }

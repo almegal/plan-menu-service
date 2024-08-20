@@ -34,7 +34,13 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void sendNotificationToStaff(String message) {
         // Логика отправки уведомления сотрудникам
-        System.out.println("Уведомление для сотрудников: " + message);
+        // Примечание: Для отправки уведомлений сотрудникам используем фиксированный тип уведомления
+        NotificationRequestDTO notificationRequestDTO = new NotificationRequestDTO(
+                null, // Поскольку это не для конкретного пользователя, ID можно не задавать
+                message,
+                "INFO" // Примерный тип уведомления, который может быть определен в вашем бизнес-процессе
+        );
+        sendNotification(notificationRequestDTO);
     }
 
     @Override
@@ -43,7 +49,7 @@ public class NotificationServiceImpl implements NotificationService {
         NotificationRequestDTO notificationRequestDTO = new NotificationRequestDTO(
                 userId,
                 message,
-                "INFO"
+                "INFO" // Примерный тип уведомления
         );
         sendNotification(notificationRequestDTO);
     }
@@ -53,8 +59,8 @@ public class NotificationServiceImpl implements NotificationService {
         // Создание DTO для отправки уведомления об ошибке
         NotificationRequestDTO notificationRequestDTO = new NotificationRequestDTO(
                 errorDTO.userId(),
-                errorDTO.message(),
-                "ERROR"
+                errorDTO.message(), // Используем message из ErrorDTO для уведомления
+                "ERROR" // Тип уведомления для ошибок
         );
         sendNotification(notificationRequestDTO);
     }

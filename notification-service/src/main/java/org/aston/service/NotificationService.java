@@ -1,7 +1,6 @@
 package org.aston.service;
 
-import lombok.RequiredArgsConstructor;
-
+import lombok.AllArgsConstructor;
 import org.aston.client.SendMail;
 import org.aston.dto.NotificationDtoRequest;
 import org.aston.dto.NotificationResponse;
@@ -11,7 +10,7 @@ import org.springframework.stereotype.Service;
 import static org.aston.mapper.NotificationMapper.mapDtoToEntity;
 
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class NotificationService {
     private final NotificationRepository repository;
 

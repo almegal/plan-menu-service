@@ -36,7 +36,7 @@ public class ShopListMakerUnitTest {
                                 1L,
                                 "Recipe 1",
                                 // Ингредиенты для первого рецепта
-                                List.of(new IngredientDto("Ingredient 1", 200D), new IngredientDto("Ingredient 2", 140D)))),
+                                List.of(new IngredientDto(1L,"Ingredient 1", 200D), new IngredientDto(2L,"Ingredient 2", 140D)))),
                         // План на 3 порции
                         List.of(new MealPlanEntryDto(null, "Recipe 1", null, 3)),
                         // Ожидаемый список покупок
@@ -55,20 +55,20 @@ public class ShopListMakerUnitTest {
                                         "Recipe 2",
                                         // Ингредиенты для второго рецепта
                                         List.of(
-                                                new IngredientDto("Ingredient 2", 1000D),
-                                                new IngredientDto("Ingredient 3", 293824.00D),
-                                                new IngredientDto("Ingredient 4", 1000.78D),
-                                                new IngredientDto("Ingredient 5", 0.10D))),
+                                                new IngredientDto(1L,"Ingredient 2", 1000D),
+                                                new IngredientDto(2L, "Ingredient 3", 293824.00D),
+                                                new IngredientDto(3L,"Ingredient 4", 1000.78D),
+                                                new IngredientDto(4L,"Ingredient 5", 0.10D))),
                                 //
                                 new RecipeWithIngredientDto(
                                         4L,
                                         "Recipe 3",
                                         // Ингредиенты для второго рецепта
                                         List.of(
-                                                new IngredientDto("Ingredient 6", 1000D),
-                                                new IngredientDto("Ingredient 7", 293824.00D),
-                                                new IngredientDto("Ingredient 8", 1000.78D),
-                                                new IngredientDto("Ingredient 9", 0.10D)))
+                                                new IngredientDto(5L,"Ingredient 6", 1000D),
+                                                new IngredientDto(6L,"Ingredient 7", 293824.00D),
+                                                new IngredientDto(7L,"Ingredient 8", 1000.78D),
+                                                new IngredientDto(8L,"Ingredient 9", 0.10D)))
                         ),
                         // План на 5 порций
                         List.of(

@@ -4,7 +4,7 @@ import java.util.List;
 
 public record RecipeWithIngredientDto(
         Long id,
-        String titleRecipe,
-        List<IngredientDto> ingredientDtoList
+        String recipeTitle,
+        List<IngredientDto> ingredientDTOs
 ) {
 }

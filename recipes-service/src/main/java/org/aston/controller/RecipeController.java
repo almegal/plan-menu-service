@@ -47,5 +47,4 @@ public class RecipeController {
     public ResponseEntity<ResponseCategoriesDTO> getCategories() {
         return ResponseEntity.ok(categoryService.getAllCategories());
     }
-
 }

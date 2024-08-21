@@ -29,7 +29,7 @@ public class ShopListMaker {
         recipeWithIngredientDto.forEach(
                 recipe -> {
                     //
-                    MealPlanEntryDto mealPlanEntryDto = getMealPlanEntryByTitleRecipe(recipe.titleRecipe(), mealPlansEntryDto);
+                    MealPlanEntryDto mealPlanEntryDto = getMealPlanEntryByTitleRecipe(recipe.recipeTitle(), mealPlansEntryDto);
                     //
                     int numberOfPeople = mealPlanEntryDto.numberOfPeople();
                     //
@@ -57,11 +57,11 @@ public class ShopListMaker {
                                        int numberOfPeople,
                                        Map<String, Double> map) {
         //
-        recipeWithIngredientDto.ingredientDtoList()
+        recipeWithIngredientDto.ingredientDTOs()
                 //
                 .forEach(e -> {
                     String productName = e.ingredientTitle();
-                    Double count = e.portion() * numberOfPeople;
+                    Double count = e.amount() * numberOfPeople;
                     map.put(productName, count);
                 });
     }

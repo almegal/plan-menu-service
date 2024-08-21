@@ -14,6 +14,6 @@ public class IngredientService {
     private final IngredientMapper mapper;
     private final IngredientRepo ingredientRepository;
     public List<IngredientDTO> getIngredientsByRecipeId(long recipeId) {
-        return mapper.mapEntitiesToDtos(ingredientRepository.findByRecipeRecipeId(recipeId));
+        return mapper.mapEntitiesToDtos(ingredientRepository.findByIdRecipeId(recipeId));
     }
 }

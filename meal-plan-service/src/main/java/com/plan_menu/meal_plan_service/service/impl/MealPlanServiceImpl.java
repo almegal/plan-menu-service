@@ -63,16 +63,6 @@ public class MealPlanServiceImpl implements MealPlanService {
         this.notificationService = notificationService;
         this.shopListMaker = shopListMaker;
     }
-
-    /**
-     * Конструктор для инъекции зависимостей.
-     *
-     * @param repository          репозиторий для работы с сущностями MealPlan
-     * @param mapperMealPlan      маппер для преобразования между MealPlanEntity и MealPlanDto
-     * @param mapperMealPlanEntry маппер для преобразования между MealPlanEntryEntity и MealPlanEntryDto
-     */
-
-
     @Override
     public List<MealPlanEntryDto> getMealPlan(Long userId) {
         // Получаем опциональную сущность MealPlanEntity из репозитория по userId.

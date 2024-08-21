@@ -18,6 +18,7 @@ CREATE TABLE shopping_lists (
     status VARCHAR(50) NOT NULL,
     collection_status VARCHAR(50),
     readiness_status VARCHAR(50),
+
     user_id BIGINT NOT NULL
 );
 

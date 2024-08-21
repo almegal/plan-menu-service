@@ -7,6 +7,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 @FeignClient(name = "order-service")
 public interface OrderServiceClient {
-    @PostMapping("/orders/")
+    @PostMapping("/api/shopping-lists")
     HttpStatus sendListOrder(ShoppingListRequestDto lists);
 }

@@ -60,6 +60,18 @@ public class ShoppingListController {
     }
 
     /**
+     * Обрабатывает запросы от планировщика меню для создания списка покупок на основе предложенного плана.
+     *
+     * @param requestDTO данные для создания списка покупок на основе плана меню
+     * @return ResponseEntity с созданным списком покупок
+     */
+    @PostMapping("/from-menu-plan")
+    public ResponseEntity<ShoppingListResponseDTO> createShoppingListFromMenuPlan(@RequestBody ShoppingListRequestDTO requestDTO) {
+        ShoppingListResponseDTO shoppingList = shoppingListService.createShoppingList(requestDTO);
+        return ResponseEntity.ok(shoppingList);
+    }
+
+    /**
      * Инициирует процесс заказа товаров из списка покупок.
      *
      * @param shoppingListId идентификатор списка покупок

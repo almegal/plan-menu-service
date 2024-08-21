@@ -33,5 +33,9 @@ public class Product {
     @Enumerated(EnumType.STRING)
     private MeasurementUnit unit;
 
-    private String status;
+    private String status; // Добавлено поле status
+
+    public int getVolumeOrWeight() {
+        return weightPerPack != null ? weightPerPack.intValue() : 0;
+    }
 }

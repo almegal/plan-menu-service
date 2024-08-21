@@ -55,18 +55,23 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void startCollection(ShoppingList shoppingList) {
         System.out.println("Начало сборки продуктов из списка покупок: " + shoppingList.getId());
+
+        // Обрабатываем каждый элемент в списке покупок
         shoppingList.getItems().forEach(item -> {
             Product product = item.getProduct();
             int quantity = item.getQuantity();
 
+            // Проверяем доступность продукта
             if (!productRepository.isProductAvailable(product.getId(), quantity)) {
                 throw new RuntimeException("Продукт " + product.getId() + " не доступен в нужном количестве");
             }
 
+            // Устанавливаем статус продукта
             product.setStatus("IN_COLLECTION");
             productRepository.save(product);
         });
 
+        // Отправляем уведомление сотрудникам
         notificationService.sendNotificationToStaff("Начало сборки продуктов для списка покупок: " + shoppingList.getId());
     }
 
@@ -74,6 +79,7 @@ public class ProductServiceImpl implements ProductService {
     public void startDelivery(ShoppingList shoppingList) {
         System.out.println("Начало доставки продуктов из списка покупок: " + shoppingList.getId());
 
+        // Проверяем, что все продукты собраны
         boolean allProductsCollected = shoppingList.getItems().stream()
                 .allMatch(item -> "COLLECTED".equals(item.getProduct().getStatus()));
 
@@ -81,12 +87,14 @@ public class ProductServiceImpl implements ProductService {
             throw new RuntimeException("Не все продукты собраны для списка покупок: " + shoppingList.getId());
         }
 
+        // Устанавливаем статус для всех продуктов
         shoppingList.getItems().forEach(item -> {
             Product product = item.getProduct();
             product.setStatus("IN_DELIVERY");
             productRepository.save(product);
         });
 
+        // Отправляем уведомление пользователю
         notificationService.sendNotificationToUser(shoppingList.getUserId(), "Доставка продуктов для списка покупок " + shoppingList.getId() + " начата");
     }
 }

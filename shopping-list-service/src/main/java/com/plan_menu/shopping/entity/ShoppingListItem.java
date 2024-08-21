@@ -3,6 +3,7 @@ package com.plan_menu.shopping.entity;
 import com.plan_menu.shopping.enums.MeasurementUnit;
 import lombok.Data;
 import jakarta.persistence.*;
+import java.util.List;
 
 /**
  * Сущность, представляющая элемент списка покупок.
@@ -30,4 +31,15 @@ public class ShoppingListItem {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shopping_list_id", nullable = false)
     private ShoppingList shoppingList;
+
+    @Transient
+    private List<Product> optimizedProducts;
+
+    public List<Product> getOptimizedProducts() {
+        return optimizedProducts;
+    }
+
+    public void setOptimizedProducts(List<Product> optimizedProducts) {
+        this.optimizedProducts = optimizedProducts;
+    }
 }

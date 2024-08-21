@@ -1,8 +1,7 @@
 package org.aston.service;
 
-import lombok.RequiredArgsConstructor;
-import org.aston.client.ApiGatewayClient;
-
+import lombok.AllArgsConstructor;
+import org.aston.client.SendMail;
 import org.aston.dto.NotificationDtoRequest;
 import org.aston.dto.NotificationResponse;
 import org.aston.repository.NotificationRepository;
@@ -11,11 +10,9 @@ import org.springframework.stereotype.Service;
 import static org.aston.mapper.NotificationMapper.mapDtoToEntity;
 
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class NotificationService {
     private final NotificationRepository repository;
-
-    private final ApiGatewayClient apiGatewayClient;
 
     public NotificationResponse createNotification(NotificationDtoRequest dtoRequest) {
         notifyUser(dtoRequest);
@@ -24,6 +21,6 @@ public class NotificationService {
     }
 
     private void notifyUser(NotificationDtoRequest request) {
-        apiGatewayClient.sendNotificationToTelegramBot(request);
+        SendMail.sendMail(request);
     }
 }

@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
-	<groupId>com.plan-menu</groupId>
+	<groupId>org.aston</groupId>
 	<artifactId>meal-plan-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>meal-plan-service</name>

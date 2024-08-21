@@ -19,6 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(NotificationController.class)
 public class NotificationControllerTest {
+    /** @noinspection SpringJavaInjectionPointsAutowiringInspection*/
     @Autowired
     private MockMvc mockMvc;
 

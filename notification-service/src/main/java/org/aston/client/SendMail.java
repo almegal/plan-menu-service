@@ -14,9 +14,9 @@ import javax.mail.internet.MimeMessage;
 
 public class SendMail {
     public static void sendMail(NotificationDtoRequest notification) {
-        final String fromEmail = "alekseipeikhel@gmail.com";
+        final String fromEmail = "";
         final String password = "";
-        final String toEmail = "shikoksana57@gmail.com";
+        final String toEmail = "";
 
         System.out.println("SSLEmail Start");
         Properties props = new Properties();
@@ -43,7 +43,7 @@ public class SendMail {
         {
             Message msg = new MimeMessage(session);
 
-            msg.setFrom(new InternetAddress("alekseipeikhel@gmail.com"));
+            msg.setFrom(new InternetAddress("Meal planning Team"));
 
             msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
             msg.setSubject("Meal-plan notification");

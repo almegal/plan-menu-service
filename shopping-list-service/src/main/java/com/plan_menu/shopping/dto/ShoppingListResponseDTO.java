@@ -16,5 +16,6 @@ public record ShoppingListResponseDTO(
         String status,
         String collectionStatus,
         String readinessStatus,
-        List<ShoppingListItemRequestDTO> items) {
+        Long mealPlanId, // Добавлено поле mealPlanId
+        List<ShoppingListItemDTO> items) {
 }

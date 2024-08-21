@@ -4,10 +4,7 @@ import com.plan_menu.shopping.dto.ShoppingListRequestDTO;
 import com.plan_menu.shopping.dto.ShoppingListResponseDTO;
 import com.plan_menu.shopping.dto.NotificationRequestDTO;
 import com.plan_menu.shopping.entity.Product;
-import com.plan_menu.shopping.entity.ShoppingList;
-import com.plan_menu.shopping.entity.ShoppingListItem;
 import com.plan_menu.shopping.exception.ShoppingListNotFoundException;
-import com.plan_menu.shopping.feign.MenuPlannerClient;
 import com.plan_menu.shopping.feign.NotificationClient;
 import com.plan_menu.shopping.mapper.ShoppingListMapper;
 import com.plan_menu.shopping.repository.ProductRepository;
@@ -21,7 +18,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Реализация сервиса списка покупок.
@@ -34,7 +30,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     private final NotificationService notificationService;
     private final ProductService productService;
     private final ProductRepository productRepository;
-    private final MenuPlannerClient menuPlannerClient;
+    private final MenuPlannerFeignClient menuPlannerClient;
     private final NotificationClient notificationClient;
     private final ShoppingListMapper shoppingListMapper;
 
@@ -53,7 +49,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
                                    NotificationService notificationService,
                                    ProductService productService,
                                    ProductRepository productRepository,
-                                   MenuPlannerClient menuPlannerClient,
+                                   MenuPlannerFeignClient menuPlannerClient,
                                    NotificationClient notificationClient,
                                    ShoppingListMapper shoppingListMapper) {
         this.shoppingListRepository = shoppingListRepository;

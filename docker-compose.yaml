@@ -1,0 +1,46 @@
+version: '3'
+
+services:
+  eureka-service:
+    build:
+      context: eureka-service
+    ports:
+      - "8081:8080"
+    networks:
+      - network1
+
+  meal-plan-service:
+    build:
+      context: meal-plan-service
+    ports:
+      - "8082:8080"
+    environment:
+      - DB_URL=jdbc:postgresql://service1_db:5432/meal_plan_service_db
+      - DB_USER=meal_plan_user
+      - DB_PASSWORD=meal_plan_password
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:8080/eureka/  # URL Eureka
+    networks:
+      - network1
+    depends_on:
+      - service1_db
+      - eureka-service
+
+  service1_db:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: meal_plan_service_db
+      POSTGRES_USER: meal_plan_user
+      POSTGRES_PASSWORD: meal_plan_password
+    volumes:
+      - service1_db_data:/var/lib/postgresql/data
+    networks:
+      - network1
+
+volumes:
+  service1_db_data:
+
+networks:
+  network1:
+    driver: bridge

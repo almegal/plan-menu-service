@@ -1,15 +1,14 @@
 package org.aston.service;
 
-import org.aston.client.ApiGatewayClient;
 import org.aston.dto.NotificationDtoRequest;
 import org.aston.dto.NotificationResponse;
 import org.aston.entity.Notification;
 import org.aston.mapper.NotificationMapper;
 import org.aston.repository.NotificationRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -19,15 +18,8 @@ import static org.mockito.Mockito.*;
 public class NotificationServiceTest {
     @Mock
     private NotificationRepository repository;
-    @Mock
-    private ApiGatewayClient apiGatewayClient;
-
+    @InjectMocks
     private NotificationService service;
-
-    @BeforeEach
-    void setUp() {
-        service = new NotificationService(repository, apiGatewayClient);
-    }
 
     @Test
     @DisplayName("Test creating notification for user")
@@ -42,6 +34,5 @@ public class NotificationServiceTest {
 
         assertThat(response.notificationId()).isEqualTo(1L);
         verify(repository).save(any(Notification.class));
-        verify(apiGatewayClient).sendNotificationToTelegramBot(dtoRequest);
     }
 }

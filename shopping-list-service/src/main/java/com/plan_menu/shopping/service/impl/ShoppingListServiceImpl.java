@@ -1,14 +1,8 @@
 package com.plan_menu.shopping.service.impl;
 
-import com.plan_menu.shopping.dto.ShoppingListRequestDTO;
-import com.plan_menu.shopping.dto.ShoppingListResponseDTO;
-import com.plan_menu.shopping.dto.NotificationRequestDTO;
+import com.plan_menu.shopping.dto.*;
 import com.plan_menu.shopping.entity.Product;
-import com.plan_menu.shopping.entity.ShoppingList;
-import com.plan_menu.shopping.entity.ShoppingListItem;
 import com.plan_menu.shopping.exception.ShoppingListNotFoundException;
-import com.plan_menu.shopping.feign.MenuPlannerClient;
-import com.plan_menu.shopping.feign.NotificationClient;
 import com.plan_menu.shopping.mapper.ShoppingListMapper;
 import com.plan_menu.shopping.repository.ProductRepository;
 import com.plan_menu.shopping.repository.ShoppingListRepository;
@@ -21,11 +15,10 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Реализация сервиса списка покупок.
- * Обрабатывает операции со списками покупок.
+ * Обрабатывает операции со списками покупок, включая создание, оптимизацию, сборку и доставку.
  */
 @Service
 public class ShoppingListServiceImpl implements ShoppingListService {
@@ -34,8 +27,6 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     private final NotificationService notificationService;
     private final ProductService productService;
     private final ProductRepository productRepository;
-    private final MenuPlannerClient menuPlannerClient;
-    private final NotificationClient notificationClient;
     private final ShoppingListMapper shoppingListMapper;
 
     /**
@@ -45,32 +36,29 @@ public class ShoppingListServiceImpl implements ShoppingListService {
      * @param notificationService сервис уведомлений
      * @param productService сервис продуктов
      * @param productRepository репозиторий для работы с продуктами
-     * @param menuPlannerClient клиент для взаимодействия с Meal Planning Service
-     * @param notificationClient клиент для отправки уведомлений
      * @param shoppingListMapper маппер для преобразования между сущностями и DTO
      */
     public ShoppingListServiceImpl(ShoppingListRepository shoppingListRepository,
                                    NotificationService notificationService,
                                    ProductService productService,
                                    ProductRepository productRepository,
-                                   MenuPlannerClient menuPlannerClient,
-                                   NotificationClient notificationClient,
                                    ShoppingListMapper shoppingListMapper) {
         this.shoppingListRepository = shoppingListRepository;
         this.notificationService = notificationService;
         this.productService = productService;
         this.productRepository = productRepository;
-        this.menuPlannerClient = menuPlannerClient;
-        this.notificationClient = notificationClient;
         this.shoppingListMapper = shoppingListMapper;
     }
 
+    /**
+     * Создает новый список покупок на основе данных из DTO.
+     *
+     * @param requestDTO DTO с данными для создания списка покупок
+     * @return DTO с данными созданного списка покупок
+     */
     @Override
     public ShoppingListResponseDTO createShoppingList(ShoppingListRequestDTO requestDTO) {
-        // Получение данных от Meal Planning Service
-        var mealPlan = menuPlannerClient.getMealPlanById(requestDTO.mealPlanId());
-
-        // Создание списка покупок на основе mealPlan
+        // Создание списка покупок на основе данных из DTO
         var shoppingList = shoppingListMapper.toShoppingList(requestDTO);
         shoppingList.setCreatedDate(LocalDateTime.now());
         shoppingList = shoppingListRepository.save(shoppingList);
@@ -81,11 +69,18 @@ public class ShoppingListServiceImpl implements ShoppingListService {
                 "Ваш список покупок создан",
                 "INFO"
         );
-        notificationClient.sendNotification(notificationRequestDTO);
+        notificationService.sendNotification(notificationRequestDTO);
 
         return shoppingListMapper.toShoppingListResponseDTO(shoppingList);
     }
 
+    /**
+     * Получает список покупок по его идентификатору.
+     *
+     * @param id идентификатор списка покупок
+     * @return DTO с данными списка покупок
+     * @throws ShoppingListNotFoundException если список покупок не найден
+     */
     @Override
     public ShoppingListResponseDTO getShoppingListById(Long id) {
         var shoppingList = shoppingListRepository.findById(id)
@@ -93,6 +88,13 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         return shoppingListMapper.toShoppingListResponseDTO(shoppingList);
     }
 
+    /**
+     * Оптимизирует список покупок для использования упаковок продуктов.
+     *
+     * @param shoppingListId идентификатор списка покупок
+     * @return DTO с оптимизированным списком покупок
+     * @throws ShoppingListNotFoundException если список покупок не найден
+     */
     @Override
     public ShoppingListResponseDTO optimizeShoppingList(Long shoppingListId) {
         var shoppingList = shoppingListRepository.findById(shoppingListId)
@@ -106,7 +108,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             var availableProducts = productRepository.findAvailableProducts(productId);
 
             // Оптимизируем количество с использованием метода оптимального подбора
-            var optimizedProducts = findOptimalCombination(availableProducts, requiredQuantity);
+            var optimizedProducts = findOptimalCombination(availableProducts, requiredQuantity, shoppingList.getUserId());
 
             // Обновляем список покупок
             item.setOptimizedProducts(optimizedProducts);
@@ -116,6 +118,12 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         return shoppingListMapper.toShoppingListResponseDTO(shoppingList);
     }
 
+    /**
+     * Инициирует процесс размещения заказа на продукты из списка покупок.
+     *
+     * @param shoppingListId идентификатор списка покупок
+     * @throws ShoppingListNotFoundException если список покупок не найден
+     */
     @Override
     public void initiateProductOrder(Long shoppingListId) {
         var shoppingList = shoppingListRepository.findById(shoppingListId)
@@ -127,6 +135,12 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         productService.placeOrder(shoppingList);
     }
 
+    /**
+     * Начинает процесс сборки продуктов из списка покупок.
+     *
+     * @param shoppingListId идентификатор списка покупок
+     * @throws ShoppingListNotFoundException если список покупок не найден
+     */
     @Override
     public void startProductCollection(Long shoppingListId) {
         var shoppingList = shoppingListRepository.findById(shoppingListId)
@@ -138,6 +152,12 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         productService.startCollection(shoppingList);
     }
 
+    /**
+     * Начинает процесс доставки продуктов из списка покупок.
+     *
+     * @param shoppingListId идентификатор списка покупок
+     * @throws ShoppingListNotFoundException если список покупок не найден
+     */
     @Override
     public void startProductDelivery(Long shoppingListId) {
         var shoppingList = shoppingListRepository.findById(shoppingListId)
@@ -149,6 +169,10 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         productService.startDelivery(shoppingList);
     }
 
+    /**
+     * Планировщик для обработки заказов с имитацией задержек.
+     * Обрабатывает заказы по этапам: размещение, сборка, доставка.
+     */
     @Scheduled(fixedDelay = 15000) // Задержка в 15 секунд
     public void processOrder() {
         var shoppingListOpt = shoppingListRepository.findFirstByStatus("NEW");
@@ -192,35 +216,42 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         });
     }
 
-    private List<Product> findOptimalCombination(List<Product> availableProducts, int requiredQuantity) {
+    /**
+     * Находит оптимальную комбинацию упаковок для удовлетворения требуемого количества продукта.
+     *
+     * @param availableProducts список доступных упаковок продукта
+     * @param requiredQuantity требуемое количество продукта
+     * @param userId идентификатор пользователя для уведомления
+     * @return список оптимальных упаковок
+     */
+    private List<Product> findOptimalCombination(List<Product> availableProducts, int requiredQuantity, Long userId) {
         List<Product> selectedProducts = new ArrayList<>();
         int remainingQuantity = requiredQuantity;
 
         availableProducts.sort((p1, p2) -> Integer.compare(p2.getVolumeOrWeight(), p1.getVolumeOrWeight())); // Сортируем от большего к меньшему
 
-        for (var product : availableProducts) {
-            if (remainingQuantity <= 0) {
-                break;
-            }
-            int productVolumeOrWeight = product.getVolumeOrWeight();
-            if (productVolumeOrWeight <= remainingQuantity) {
+        for (Product product : availableProducts) {
+            while (remainingQuantity >= product.getVolumeOrWeight()) {
                 selectedProducts.add(product);
-                remainingQuantity -= productVolumeOrWeight;
+                remainingQuantity -= product.getVolumeOrWeight();
             }
         }
 
-        // Проверяем, есть ли остаток и можем ли его как-то покрыть
         if (remainingQuantity > 0) {
-            for (var product : availableProducts) {
-                int productVolumeOrWeight = product.getVolumeOrWeight();
-                if (productVolumeOrWeight >= remainingQuantity) {
-                    selectedProducts.add(product);
-                    remainingQuantity -= productVolumeOrWeight;
-                    break;
-                }
-            }
+            handleRemainingQuantity(remainingQuantity, userId);
         }
 
         return selectedProducts;
+    }
+
+    /**
+     * Обрабатывает оставшееся количество продукта, если его не удается полностью удовлетворить.
+     *
+     * @param remainingQuantity оставшееся количество продукта
+     * @param userId идентификатор пользователя для уведомления
+     */
+    private void handleRemainingQuantity(int remainingQuantity, Long userId) {
+        String message = "Не удалось полностью удовлетворить количество продукта. Осталось " + remainingQuantity + " единиц.";
+        notificationService.sendNotificationToUser(userId, message);
     }
 }

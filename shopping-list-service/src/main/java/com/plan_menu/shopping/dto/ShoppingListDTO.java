@@ -6,7 +6,8 @@ import java.util.List;
 /**
  * Объект передачи данных (DTO) для передачи информации о списке покупок.
  * Этот DTO содержит идентификатор списка покупок, название, описание, дату создания,
- * статус, статус сборки, статус готовности, идентификатор пользователя и список товаров.
+ * статус, статус сборки, статус готовности, идентификатор плана питания, идентификатор пользователя
+ * и список товаров.
  */
 public record ShoppingListDTO(
         Long id,
@@ -17,5 +18,6 @@ public record ShoppingListDTO(
         String collectionStatus,
         String readinessStatus,
         Long userId,
+        Long mealPlanId, // Добавлено поле mealPlanId
         List<ShoppingListItemDTO> items) {
 }

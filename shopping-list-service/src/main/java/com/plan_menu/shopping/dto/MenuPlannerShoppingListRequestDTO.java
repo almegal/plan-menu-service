@@ -11,4 +11,3 @@ public record MenuPlannerShoppingListRequestDTO(
         Map<String, Double> shoppingList // Название продукта и его количество
 ) {
 }
-

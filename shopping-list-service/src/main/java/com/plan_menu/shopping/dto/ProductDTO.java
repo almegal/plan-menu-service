@@ -13,5 +13,6 @@ public record ProductDTO(
         Double weightPerPack,
         String descriptionShort,
         Integer countOnStorage,
-        MeasurementUnit unit) {
+        MeasurementUnit unit,
+        String status) { // Добавлено поле status
 }

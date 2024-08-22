@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Репозиторий для работы со списками покупок.
@@ -30,4 +31,12 @@ public interface ShoppingListRepository extends JpaRepository<ShoppingList, Long
      */
     @Query("SELECT s FROM ShoppingList s WHERE s.name LIKE %:namePart%")
     List<ShoppingList> findByNameContaining(String namePart);
+
+    /**
+     * Находит список покупок по статусу.
+     *
+     * @param status статус списка покупок.
+     * @return Optional, содержащий найденный список покупок, если таковой существует.
+     */
+    Optional<ShoppingList> findFirstByStatus(String status);
 }

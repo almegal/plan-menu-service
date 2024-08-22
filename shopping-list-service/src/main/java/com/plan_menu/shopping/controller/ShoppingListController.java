@@ -1,16 +1,19 @@
 package com.plan_menu.shopping.controller;
 
-import com.plan_menu.shopping.dto.ShoppingListRequestDTO;
-import com.plan_menu.shopping.dto.ShoppingListResponseDTO;
+import com.plan_menu.shopping.dto.*;
+import com.plan_menu.shopping.exception.ShoppingListNotFoundException;
 import com.plan_menu.shopping.service.ShoppingListService;
+import com.plan_menu.shopping.mapper.ShoppingListMapper;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 /**
  * Контроллер для управления списками покупок.
- * Предоставляет методы для создания, получения, обновления и удаления списков покупок.
+ * Предоставляет методы для создания, получения, обновления и обработки списков покупок.
  */
 @RestController
 @RequestMapping("/api/shopping-lists")
@@ -18,80 +21,134 @@ import org.springframework.web.bind.annotation.*;
 public class ShoppingListController {
 
     private final ShoppingListService shoppingListService;
+    private final ShoppingListMapper shoppingListMapper;
+    private static final Logger logger = LoggerFactory.getLogger(ShoppingListController.class);
 
     /**
-     * Создает новый список покупок.
+     * Обрабатывает запрос от планировщика меню для создания списка покупок.
      *
-     * @param requestDTO данные для создания списка покупок
-     * @return ResponseEntity с созданным списком покупок
+     * @param requestDto DTO с данными списка покупок от планировщика меню.
+     * @return ResponseEntity с кодом статуса 200 OK, если обработка прошла успешно.
      */
-    @PostMapping
-    public ResponseEntity<ShoppingListResponseDTO> createShoppingList(@RequestBody ShoppingListRequestDTO requestDTO) {
-        ShoppingListResponseDTO shoppingList = shoppingListService.createShoppingList(requestDTO);
-        return ResponseEntity.ok(shoppingList);
+    @PostMapping("/receive-from-planner")
+    public ResponseEntity<Void> receiveFromPlanner(@RequestBody MenuPlannerShoppingListRequestDTO requestDto) {
+        try {
+            // Преобразование MenuPlannerShoppingListRequestDTO в ShoppingListRequestDTO
+            ShoppingListRequestDTO shoppingListRequestDTO = shoppingListMapper.toShoppingListRequestDTO(requestDto);
+
+            // Создание списка покупок
+            shoppingListService.createShoppingList(shoppingListRequestDTO);
+
+            logger.info("Received and processed shopping list request from planner with user ID: {}", requestDto.userId());
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            logger.error("Failed to process shopping list request from planner", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     /**
      * Возвращает список покупок по его идентификатору.
      *
-     * @param id идентификатор списка покупок
-     * @return ResponseEntity с найденным списком покупок
+     * @param id идентификатор списка покупок.
+     * @return ResponseEntity с найденным списком покупок и кодом статуса 200 OK.
      */
     @GetMapping("/{id}")
     public ResponseEntity<ShoppingListResponseDTO> getShoppingListById(@PathVariable Long id) {
-        ShoppingListResponseDTO shoppingList = shoppingListService.getShoppingListById(id);
-        return ResponseEntity.ok(shoppingList);
+        try {
+            ShoppingListResponseDTO shoppingList = shoppingListService.getShoppingListById(id);
+            logger.info("Retrieved shopping list with ID: {}", id);
+            return ResponseEntity.ok(shoppingList);
+        } catch (ShoppingListNotFoundException e) {
+            logger.error("Shopping list with ID {} not found", id, e);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            logger.error("Failed to retrieve shopping list with ID: {}", id, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     /**
-     * Оптимизирует список покупок для пользователя.
+     * Оптимизирует список покупок по его идентификатору.
      *
-     * @param shoppingListId идентификатор списка покупок
-     * @return ResponseEntity с оптимизированным списком покупок
+     * @param shoppingListId идентификатор списка покупок.
+     * @return ResponseEntity с оптимизированным списком покупок и кодом статуса 200 OK.
      */
     @PostMapping("/{shoppingListId}/optimize")
     public ResponseEntity<ShoppingListResponseDTO> optimizeShoppingList(@PathVariable Long shoppingListId) {
         try {
             ShoppingListResponseDTO optimizedList = shoppingListService.optimizeShoppingList(shoppingListId);
+            logger.info("Optimized shopping list with ID: {}", shoppingListId);
             return ResponseEntity.ok(optimizedList);
+        } catch (ShoppingListNotFoundException e) {
+            logger.error("Shopping list with ID {} not found", shoppingListId, e);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+            logger.error("Failed to optimize shopping list with ID: {}", shoppingListId, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
     /**
-     * Инициирует процесс заказа товаров из списка покупок.
+     * Инициирует процесс размещения заказа на продукты из списка покупок.
      *
-     * @param shoppingListId идентификатор списка покупок
-     * @return ResponseEntity с результатом выполнения заказа
+     * @param shoppingListId идентификатор списка покупок.
+     * @return ResponseEntity с кодом статуса 200 OK, если запрос успешно обработан.
      */
     @PostMapping("/{shoppingListId}/order")
-    public ResponseEntity<String> initiateProductOrder(@PathVariable Long shoppingListId) {
-        shoppingListService.initiateProductOrder(shoppingListId);
-        return ResponseEntity.ok("Order initiated successfully.");
+    public ResponseEntity<Void> initiateProductOrder(@PathVariable Long shoppingListId) {
+        try {
+            shoppingListService.initiateProductOrder(shoppingListId);
+            logger.info("Initiated product order for shopping list with ID: {}", shoppingListId);
+            return ResponseEntity.ok().build();
+        } catch (ShoppingListNotFoundException e) {
+            logger.error("Shopping list with ID {} not found", shoppingListId, e);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            logger.error("Failed to initiate product order for shopping list with ID: {}", shoppingListId, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     /**
-     * Запускает процесс сборки товаров для доставки.
+     * Начинает процесс сборки продуктов из списка покупок.
      *
-     * @param shoppingListId идентификатор списка покупок
-     * @return ResponseEntity с результатом выполнения сборки товаров
+     * @param shoppingListId идентификатор списка покупок.
+     * @return ResponseEntity с кодом статуса 200 OK, если запрос успешно обработан.
      */
-    @PostMapping("/{shoppingListId}/collect")
-    public ResponseEntity<String> startProductCollection(@PathVariable Long shoppingListId) {
-        shoppingListService.startProductCollection(shoppingListId);
-        return ResponseEntity.ok("Product collection started successfully.");
+    @PostMapping("/{shoppingListId}/collection")
+    public ResponseEntity<Void> startProductCollection(@PathVariable Long shoppingListId) {
+        try {
+            shoppingListService.startProductCollection(shoppingListId);
+            logger.info("Started product collection for shopping list with ID: {}", shoppingListId);
+            return ResponseEntity.ok().build();
+        } catch (ShoppingListNotFoundException e) {
+            logger.error("Shopping list with ID {} not found", shoppingListId, e);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            logger.error("Failed to start product collection for shopping list with ID: {}", shoppingListId, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     /**
-     * Запускает процесс доставки товаров.
+     * Начинает процесс доставки продуктов из списка покупок.
      *
-     * @param shoppingListId идентификатор списка покупок
-     * @return ResponseEntity с результатом выполнения доставки товаров
+     * @param shoppingListId идентификатор списка покупок.
+     * @return ResponseEntity с кодом статуса 200 OK, если запрос успешно обработан.
      */
-    @PostMapping("/{shoppingListId}/deliver")
-    public ResponseEntity<String> startProductDelivery(@PathVariable Long shoppingListId) {
-        shoppingListService.startProductDelivery(shoppingListId);
-        return ResponseEntity.ok("Product delivery started successfully.");
+    @PostMapping("/{shoppingListId}/delivery")
+    public ResponseEntity<Void> startProductDelivery(@PathVariable Long shoppingListId) {
+        try {
+            shoppingListService.startProductDelivery(shoppingListId);
+            logger.info("Started product delivery for shopping list with ID: {}", shoppingListId);
+            return ResponseEntity.ok().build();
+        } catch (ShoppingListNotFoundException e) {
+            logger.error("Shopping list with ID {} not found", shoppingListId, e);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            logger.error("Failed to start product delivery for shopping list with ID: {}", shoppingListId, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }

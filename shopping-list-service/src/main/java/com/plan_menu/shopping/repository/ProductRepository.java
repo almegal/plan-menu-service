@@ -43,6 +43,16 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     boolean isProductAvailable(Long productId, int count);
 
     /**
+     * Проверяет доступность продуктов в списке.
+     *
+     * @param productIds список идентификаторов продуктов.
+     * @param counts список необходимых количеств продуктов.
+     * @return список доступных продуктов.
+     */
+    @Query("SELECT p FROM Product p WHERE p.id IN :productIds AND p.countOnStorage >= (SELECT count FROM :counts WHERE productId = p.id)")
+    List<Product> areProductsAvailable(List<Long> productIds, List<Integer> counts);
+
+    /**
      * Находит продукты по части названия.
      *
      * @param titlePart часть названия продукта.
@@ -50,4 +60,31 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
      */
     @Query("SELECT p FROM Product p WHERE p.title LIKE %:titlePart%")
     List<Product> findByTitleContaining(String titlePart);
+
+    /**
+     * Находит доступные продукты по идентификатору продукта.
+     *
+     * @param productId идентификатор продукта.
+     * @return список доступных продуктов.
+     */
+    @Query("SELECT p FROM Product p WHERE p.id = :productId AND p.countOnStorage > 0")
+    List<Product> findAvailableProducts(Long productId);
+
+    /**
+     * Находит доступные продукты по частичному названию.
+     *
+     * @param titlePart часть названия продукта.
+     * @return список доступных продуктов, содержащих указанную часть названия.
+     */
+    @Query("SELECT p FROM Product p WHERE p.title LIKE %:titlePart% AND p.countOnStorage > 0")
+    List<Product> findAvailableProductsByTitleContaining(String titlePart);
+
+    /**
+     * Находит продукты по их статусу.
+     *
+     * @param status статус продукта.
+     * @return список продуктов с указанным статусом.
+     */
+    @Query("SELECT p FROM Product p WHERE p.status = :status")
+    List<Product> findByStatus(String status);
 }

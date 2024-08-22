@@ -38,6 +38,9 @@ public class ShoppingList {
     @Column(name = "user_id")
     private Long userId;
 
+    @Column(name = "meal_plan_id") // Добавлено поле mealPlanId
+    private Long mealPlanId;
+
     @OneToMany(mappedBy = "shoppingList", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ShoppingListItem> items;
 }

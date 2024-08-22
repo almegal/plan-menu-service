@@ -38,7 +38,7 @@ public class ProductController {
      * Получает информацию о продукте по его идентификатору.
      *
      * @param productId идентификатор продукта
-     * @return ResponseEntity с информацией о продукте
+     * @return ResponseEntity с информацией о продукте, включая статус
      */
     @GetMapping("/{productId}")
     public ResponseEntity<ProductDTO> getProductById(@PathVariable Long productId) {

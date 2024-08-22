@@ -1,3 +1,5 @@
+-- liquibase formatted sql
+
 -- Создание базы данных
 CREATE DATABASE shopp_service;
 

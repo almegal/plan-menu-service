@@ -3,6 +3,7 @@ package com.plan_menu.shopping.repository;
 import com.plan_menu.shopping.entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -46,11 +47,11 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
      * Проверяет доступность продуктов в списке.
      *
      * @param productIds список идентификаторов продуктов.
-     * @param counts список необходимых количеств продуктов.
+     * @param count необходимое количество продукта.
      * @return список доступных продуктов.
      */
-    @Query("SELECT p FROM Product p WHERE p.id IN :productIds AND p.countOnStorage >= (SELECT count FROM :counts WHERE productId = p.id)")
-    List<Product> areProductsAvailable(List<Long> productIds, List<Integer> counts);
+    @Query(name = "Product.areProductsAvailable")
+    List<Product> areProductsAvailable(@Param("productIds") List<Long> productIds, @Param("count") int count);
 
     /**
      * Находит продукты по части названия.

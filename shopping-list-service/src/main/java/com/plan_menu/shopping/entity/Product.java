@@ -12,6 +12,8 @@ import jakarta.persistence.*;
 @Data
 @Entity
 @Table(name = "products")
+@NamedQuery(name = "Product.areProductsAvailable",
+        query = "SELECT p FROM Product p WHERE p.id IN :productIds AND p.countOnStorage >= :count")
 public class Product {
 
     @Id
